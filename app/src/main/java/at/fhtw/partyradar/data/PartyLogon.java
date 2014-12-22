@@ -4,7 +4,19 @@ import java.util.Date;
 
 public class PartyLogon {
 
-    public String EventID;
-    public Date LogonTime;
+    private String eventID;
+    private Date logonTime;
 
+    public String getEventID() {
+        return this.eventID;
+    }
+
+    public Date getLogonTime() {
+        return logonTime;
+    }
+
+    public void LogOnParty(String eventID, Date dateTime) {
+        this.eventID = eventID;
+        this.logonTime = dateTime;
+    }
 }
