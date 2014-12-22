@@ -6,6 +6,8 @@ public class Location {
     public Double lon;
     public Double lat;
     public String locationName;
+    public String address;
+    public String addressAdditions;
     public String zipCode;
     public String city;
     public String country;
