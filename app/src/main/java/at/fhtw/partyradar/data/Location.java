@@ -13,16 +13,21 @@ public class Location {
     public String country;
     public int maxAttends;
 
+    /**
+     * sets the position of the location
+     * @param longitude
+     * @param latitude
+     */
     public void setGeoPosition(double longitude, double latitude) {
         this.lng = longitude;
         this.lat = latitude;
     }
 
     public double getLatitude() {
-        return lat;
+        return this.lat;
     }
 
     public double getLongitude() {
-        return lng;
+        return this.lng;
     }
 }

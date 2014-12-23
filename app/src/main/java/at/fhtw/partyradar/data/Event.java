@@ -16,18 +16,35 @@ public class Event {
     private LinkedList<String> keywords = new LinkedList<String>();
     public int attendeeCount;
 
-    public LinkedList<String> getKeywords () {
+    /**
+     * returns a list of all keywords of the event
+     * @return
+     */
+    public LinkedList<String> getKeywords() {
         return keywords;
     }
 
+    /**
+     * adds a keyword to the event
+     * @param keyword
+     * @return
+     */
     public boolean addKeyword(String keyword) {
         return keywords.add(keyword);
     }
 
+    /**
+     * adds a collection of keywords to the event
+     * @param list
+     * @return
+     */
     public boolean addKeywords(Collection<String> list) {
         return keywords.addAll(list);
     }
 
+    /**
+     * deletes / clears all keywords of the event
+     */
     public void clearKeywords() {
         keywords.clear();
     }

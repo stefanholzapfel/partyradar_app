@@ -12,10 +12,15 @@ public class PartyLogon {
     }
 
     public Date getLogonTime() {
-        return logonTime;
+        return this.logonTime;
     }
 
-    public void LogOnParty(String eventID, Date dateTime) {
+    /**
+     * stores the information of attending an event
+     * @param eventID
+     * @param dateTime
+     */
+    public void attendEvent(String eventID, Date dateTime) {
         this.eventID = eventID;
         this.logonTime = dateTime;
     }
