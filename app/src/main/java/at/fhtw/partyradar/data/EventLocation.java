@@ -1,6 +1,6 @@
 package at.fhtw.partyradar.data;
 
-public class Location {
+public class EventLocation {
 
     public String locationID;
     private double lng;
