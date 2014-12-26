@@ -3,6 +3,7 @@ package at.fhtw.partyradar;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends ActionBarActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+    protected static final String TAG = "MainActivity";
 
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -39,11 +42,17 @@ public class MainActivity extends ActionBarActivity implements
         }
 
         buildGoogleApiClient();
-        createLocationRequest();
     }
 
     @Override
-    public void onResume() {
+    protected void onStart() {
+        super.onStart();
+
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onResume() {
         super.onResume();
 
         if (mGoogleApiClient.isConnected()) {
@@ -54,7 +63,19 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -87,6 +108,8 @@ public class MainActivity extends ActionBarActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        createLocationRequest();
     }
 
     @Override
@@ -96,10 +119,19 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
+    }
 
     @Override
-    public void onConnectionSuspended(int i) {}
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    public void onDisconnected() {
+        Log.i(TAG, "Disconnected");
+    }
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -123,7 +155,8 @@ public class MainActivity extends ActionBarActivity implements
 
     // TODO: implement proper location data
     public LatLng getLastLocation() {
-        return new LatLng(48.208174, 16.373819);
+      // return mLastLocation;
+      return new LatLng(48.208174, 16.373819);
     }
 
     //endregion

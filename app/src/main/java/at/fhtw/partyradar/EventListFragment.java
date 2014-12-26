@@ -5,13 +5,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 public class EventListFragment extends Fragment {
+
+    private LatLng mLastPosition;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -26,7 +26,12 @@ public class EventListFragment extends Fragment {
 
     public void onStart() {
         super.onStart();
+
+        // get last known position from parent / main activity
         MainActivity mainActivity = (MainActivity) getActivity();
-        LatLng lastLocation = mainActivity.getLastLocation();
+        mLastPosition = mainActivity.getLastLocation();
+
+        TextView textView = (TextView) getActivity().findViewById(R.id.text_position);
+        textView.setText("Lat:" + mLastPosition.latitude + " Lng:" + mLastPosition.longitude);
     }
 }
