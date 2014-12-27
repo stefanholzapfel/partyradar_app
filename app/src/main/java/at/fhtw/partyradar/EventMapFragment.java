@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -20,7 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import static at.fhtw.partyradar.helper.Utility.*;
 
 
-public class EventMapFragment extends Fragment {
+public class EventMapFragment extends Fragment implements OnMapReadyCallback {
 
     protected static final String TAG = "EventMapFragment";
 
@@ -34,39 +35,45 @@ public class EventMapFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_eventmap, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_eventmap, container, false);
+        SupportMapFragment mapFragment = (SupportMapFragment)(getChildFragmentManager().findFragmentById(R.id.mapFragment));
+
+        mapFragment.getMapAsync(this);
+
+        return rootView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    public void onMapReady(GoogleMap map) {
+        mMap = map;
 
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition position) {
+                mMapCenter = mMap.getCameraPosition().target;
+                getEvents(mMapCenter, calculateRadius());
+            }
+        });
+
+        updateLastPosition();
+
+        // center the map to the current location
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mLastPosition, 13);
+        mMap.animateCamera(cameraUpdate);
+
+        showEvents();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateLastPosition();
+    }
+
+    private void updateLastPosition() {
         // get last known position from parent / main activity
         MainActivity mainActivity = (MainActivity) getActivity();
         mLastPosition = mainActivity.getLastLocation();
-
-        mMap = ((SupportMapFragment)(getChildFragmentManager().findFragmentById(R.id.mapFragment))).getMap();
-
-        if (mMap != null) {
-
-            // center the map to the current location
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mLastPosition, 13);
-            mMap.animateCamera(cameraUpdate);
-
-            //UiSettings uiSettings = mMap.getUiSettings();
-            //uiSettings.setZoomControlsEnabled(true);
-
-            // setting the logic if the visible are is somehow changed
-            mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-                @Override
-                public void onCameraChange(CameraPosition position) {
-                    mMapCenter = mMap.getCameraPosition().target;
-                    getEvents(mMapCenter, calculateRadius());
-                }
-            });
-
-            showEvents();
-        }
     }
 
     /**

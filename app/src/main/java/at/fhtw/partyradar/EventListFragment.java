@@ -24,8 +24,9 @@ public class EventListFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_eventlist, container, false);
     }
 
-    public void onStart() {
-        super.onStart();
+    @Override
+    public void onResume() {
+        super.onResume();
 
         // get last known position from parent / main activity
         MainActivity mainActivity = (MainActivity) getActivity();
