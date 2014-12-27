@@ -53,12 +53,10 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        mMap.setMyLocationEnabled(true);
         mLastLocation = getLastLocation();
 
-        // center the map to the current location
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mLastLocation, 13);
-        mMap.animateCamera(cameraUpdate);
+        mMap.setMyLocationEnabled(true);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastLocation, 13));
 
         showEvents();
     }
