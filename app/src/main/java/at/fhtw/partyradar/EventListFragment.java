@@ -28,15 +28,16 @@ public class EventListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        updateLastLocation();
+        mLastLocation = getLastLocation();
 
         TextView textView = (TextView) getActivity().findViewById(R.id.text_position);
         textView.setText("Lat: " + mLastLocation.latitude + " Lng: " + mLastLocation.longitude);
     }
 
-    private void updateLastLocation() {
+    private LatLng getLastLocation() {
         // get last known location from parent / main activity
+        // TODO: change to better solution using ContentProvider
         MainActivity mainActivity = (MainActivity) getActivity();
-        mLastLocation = mainActivity.getLastLocation();
+        return mainActivity.getLastLocation();
     }
 }

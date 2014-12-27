@@ -54,8 +54,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
         });
 
         mMap.setMyLocationEnabled(true);
-
-        updateLastLocation();
+        mLastLocation = getLastLocation();
 
         // center the map to the current location
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mLastLocation, 13);
@@ -67,13 +66,14 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        updateLastLocation();
+        mLastLocation = getLastLocation();
     }
 
-    private void updateLastLocation() {
+    private LatLng getLastLocation() {
         // get last known location from parent / main activity
+        // TODO: change to better solution using ContentProvider
         MainActivity mainActivity = (MainActivity) getActivity();
-        mLastLocation = mainActivity.getLastLocation();
+        return mainActivity.getLastLocation();
     }
 
     /**
