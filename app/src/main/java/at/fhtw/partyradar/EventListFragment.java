@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class EventListFragment extends Fragment {
 
-    private LatLng mLastPosition;
+    private LatLng mLastLocation;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -28,15 +28,15 @@ public class EventListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        updateLastPosition();
+        updateLastLocation();
 
         TextView textView = (TextView) getActivity().findViewById(R.id.text_position);
-        textView.setText("Lat: " + mLastPosition.latitude + " Lng: " + mLastPosition.longitude);
+        textView.setText("Lat: " + mLastLocation.latitude + " Lng: " + mLastLocation.longitude);
     }
 
-    private void updateLastPosition() {
+    private void updateLastLocation() {
         // get last known position from parent / main activity
         MainActivity mainActivity = (MainActivity) getActivity();
-        mLastPosition = mainActivity.getLastLocation();
+        mLastLocation = mainActivity.getLastLocation();
     }
 }

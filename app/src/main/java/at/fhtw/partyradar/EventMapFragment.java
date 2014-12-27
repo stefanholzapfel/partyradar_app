@@ -26,7 +26,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
     protected static final String TAG = "EventMapFragment";
 
     private GoogleMap mMap;
-    private LatLng mLastPosition;
+    private LatLng mLastLocation;
     private LatLng mMapCenter;
 
     public EventMapFragment() {
@@ -56,10 +56,10 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
 
         mMap.setMyLocationEnabled(true);
 
-        updateLastPosition();
+        updateLastLocation();
 
         // center the map to the current location
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mLastPosition, 13);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mLastLocation, 13);
         mMap.animateCamera(cameraUpdate);
 
         showEvents();
@@ -68,13 +68,13 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        updateLastPosition();
+        updateLastLocation();
     }
 
-    private void updateLastPosition() {
-        // get last known position from parent / main activity
+    private void updateLastLocation() {
+        // get last known location from parent / main activity
         MainActivity mainActivity = (MainActivity) getActivity();
-        mLastPosition = mainActivity.getLastLocation();
+        mLastLocation = mainActivity.getLastLocation();
     }
 
     /**
@@ -94,7 +94,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
         if (mMap != null) {
 
             // TODO: replace by actual event data
-            // TODO: add links to event details
+            // TODO: add intents to open event details
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(48.208174, 16.373819))
                     .title("Event 1")
@@ -113,7 +113,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     /**
-     * calculates the max. radius from the center to the map to the boundary
+     * calculates the max. radius from the center of the map to the boundary
      * @return radius in km
      */
     private double calculateRadius() {
