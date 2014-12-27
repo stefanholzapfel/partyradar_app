@@ -1,4 +1,4 @@
-package at.fhtw.partyradar.data;
+package at.fhtw.partyradar.data.model;
 
 import java.util.Date;
 
