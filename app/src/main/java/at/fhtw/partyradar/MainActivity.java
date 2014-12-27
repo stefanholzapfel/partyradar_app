@@ -151,12 +151,18 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
+        Log.i(TAG, "Location update = Lat: " + location.getLatitude() + " Lng: " + location.getLongitude());
     }
 
-    // TODO: implement proper location data
+    /**
+     * returns the last known location
+     * @return returns last location, or center of vienna as fallback
+     */
     public LatLng getLastLocation() {
-      // return mLastLocation;
-      return new LatLng(48.208174, 16.373819);
+        if (mLastLocation != null)
+            return new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        else
+            return new LatLng(48.208174, 16.373819);
     }
 
     //endregion

@@ -54,6 +54,8 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        mMap.setMyLocationEnabled(true);
+
         updateLastPosition();
 
         // center the map to the current location
@@ -62,7 +64,6 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
 
         showEvents();
     }
-
 
     @Override
     public void onResume() {

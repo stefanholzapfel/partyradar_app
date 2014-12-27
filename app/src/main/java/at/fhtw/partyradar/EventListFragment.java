@@ -33,6 +33,6 @@ public class EventListFragment extends Fragment {
         mLastPosition = mainActivity.getLastLocation();
 
         TextView textView = (TextView) getActivity().findViewById(R.id.text_position);
-        textView.setText("Lat:" + mLastPosition.latitude + " Lng:" + mLastPosition.longitude);
+        textView.setText("Lat: " + mLastPosition.latitude + " Lng: " + mLastPosition.longitude);
     }
 }
