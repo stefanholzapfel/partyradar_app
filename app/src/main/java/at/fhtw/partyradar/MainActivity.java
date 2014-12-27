@@ -1,36 +1,19 @@
 package at.fhtw.partyradar;
 
-import android.content.SharedPreferences;
-import android.location.Location;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
+import at.fhtw.partyradar.service.BackgroundLocationService;
 
-public class MainActivity extends ActionBarActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends ActionBarActivity {
 
     protected static final String TAG = "MainActivity";
 
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-    private LocationRequest mLocationRequest;
-
-    private static final int MILLISECONDS_PER_SECOND = 1000;
-    private static final int UPDATE_INTERVAL_IN_SECONDS = 10;
-    private static final int FASTEST_INTERVAL_IN_SECONDS = 5;
-    private static final long UPDATE_INTERVAL = MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
-    private static final long FASTEST_INTERVAL = MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
+    private Intent mServiceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,59 +26,19 @@ public class MainActivity extends ActionBarActivity implements
                     .commit();
         }
 
-        buildGoogleApiClient();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String lat = preferences.getString(getString(R.string.pref_last_location_lat), "48.208701");
-        String lng = preferences.getString(getString(R.string.pref_last_location_lng), "16.372409");
-
-        if (lat != null && lng != null) {
-            mLastLocation = new Location("");
-            mLastLocation.setLatitude(Double.parseDouble(lat));
-            mLastLocation.setLongitude(Double.parseDouble(lng));
-
-            Log.i(TAG, "Restored last location from shared preferences");
-        }
+        mServiceIntent = new Intent(this, BackgroundLocationService.class);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mGoogleApiClient.isConnected()) {
-            startLocationUpdates();
-        }
+        startService(mServiceIntent);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mGoogleApiClient.isConnected()) {
-            stopLocationUpdates();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
-
-        if (mLastLocation != null) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = preferences.edit();
-
-            editor.putString(getString(R.string.pref_last_location_lat), Double.toString(mLastLocation.getLatitude()));
-            editor.putString(getString(R.string.pref_last_location_lng), Double.toString(mLastLocation.getLongitude()));
-            editor.apply();
-        }
+        stopService(mServiceIntent);
     }
 
     @Override
@@ -119,80 +62,6 @@ public class MainActivity extends ActionBarActivity implements
 
         return super.onOptionsItemSelected(item);
     }
-
-    //region LOCATION SERVICE
-    // ---------------------------------------------------------------------------------------------
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-
-        createLocationRequest();
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (location != null)
-            mLastLocation = location;
-
-        startLocationUpdates();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-
-    public void onDisconnected() {
-        Log.i(TAG, "Disconnected");
-    }
-
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-    }
-
-    protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if (location != null) {
-            mLastLocation = location;
-            Log.i(TAG, "Location update = Lat: " + location.getLatitude() + " Lng: " + location.getLongitude());
-        }
-    }
-
-    /**
-     * returns the last known location
-     * @return returns last location
-     */
-    public LatLng getLastLocation() {
-        if (mLastLocation != null)
-            return new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        else
-            return null;
-    }
-
-    //endregion
-    // ---------------------------------------------------------------------------------------------
-
 
     // TODO: Remove temporary method
     // TODO: Find a a better way to switch, so fragment is not created anew

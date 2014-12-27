@@ -1,6 +1,48 @@
 package at.fhtw.partyradar.helper;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.preference.PreferenceManager;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import at.fhtw.partyradar.R;
+
 public class Utility {
+
+    /**
+     * returns the position from the storage (or returns the default position)
+     * @param context
+     * @return
+     */
+    public static LatLng getPositionFromStorage(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String lat = preferences.getString(context.getString(R.string.pref_last_location_lat), context.getString(R.string.default_location_lat));
+        String lng = preferences.getString(context.getString(R.string.pref_last_location_lng), context.getString(R.string.default_location_lng));
+
+        //Log.i("Utility", "Location retrieved from Preferences");
+
+        return new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+    }
+
+    /**
+     * stores a position in the storage
+     * @param context
+     * @param location
+     */
+    public static void storePositionInStorage(Context context, Location location) {
+        if (location != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = preferences.edit();
+
+            editor.putString(context.getString(R.string.pref_last_location_lat), Double.toString(location.getLatitude()));
+            editor.putString(context.getString(R.string.pref_last_location_lng), Double.toString(location.getLongitude()));
+            editor.apply();
+
+            //Log.i("Utility", "Location stored in Preferences");
+        }
+    }
 
     /**
      * calculates the distance between to LatLng points

@@ -1,7 +1,12 @@
 package at.fhtw.partyradar;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +22,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import at.fhtw.partyradar.helper.Utility;
+import at.fhtw.partyradar.service.BackgroundLocationService;
+
 import static at.fhtw.partyradar.helper.Utility.*;
 
 public class EventMapFragment extends Fragment implements OnMapReadyCallback {
@@ -24,11 +32,34 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
     protected static final String TAG = "EventMapFragment";
 
     private GoogleMap mMap;
-    private LatLng mLastLocation;
+    private LatLng mLastPosition;
     private LatLng mMapCenter;
+
+    private BroadcastReceiver mReceiver;
+    private IntentFilter mIntentFilter;
 
     public EventMapFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // prepare and register for broadcasts of location updates
+        mIntentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String latLngString = intent.getStringExtra(BackgroundLocationService.BROADCAST_DATA);
+                String[] latLngSplit = latLngString.split("\\|");
+
+                mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
+            }
+        };
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, mIntentFilter);
+
+        mLastPosition = Utility.getPositionFromStorage(getActivity());
     }
 
     @Override
@@ -39,6 +70,12 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         return rootView;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
     }
 
     public void onMapReady(GoogleMap map) {
@@ -52,25 +89,13 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        mLastLocation = getLastLocation();
-
         mMap.setMyLocationEnabled(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastLocation, 13));
+
+        if (mLastPosition != null) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 13));
+        }
 
         showEvents();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mLastLocation = getLastLocation();
-    }
-
-    private LatLng getLastLocation() {
-        // get last known location from parent / main activity
-        // TODO: change to better solution using ContentProvider
-        MainActivity mainActivity = (MainActivity) getActivity();
-        return mainActivity.getLastLocation();
     }
 
     /**
