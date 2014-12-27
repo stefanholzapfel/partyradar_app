@@ -94,7 +94,7 @@ public class MainActivity extends ActionBarActivity implements
 
             editor.putString(getString(R.string.pref_last_location_lat), Double.toString(mLastLocation.getLatitude()));
             editor.putString(getString(R.string.pref_last_location_lng), Double.toString(mLastLocation.getLongitude()));
-            editor.commit();
+            editor.apply();
         }
     }
 
