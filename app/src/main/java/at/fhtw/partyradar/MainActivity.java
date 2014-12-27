@@ -1,7 +1,9 @@
 package at.fhtw.partyradar;
 
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -37,7 +39,7 @@ public class MainActivity extends ActionBarActivity implements
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.events_container, new EventMapFragment())
+                    .add(R.id.events_container, new EventListFragment())
                     .commit();
         }
 
@@ -48,6 +50,18 @@ public class MainActivity extends ActionBarActivity implements
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String lat = preferences.getString(getString(R.string.pref_last_location_lat), "48.208701");
+        String lng = preferences.getString(getString(R.string.pref_last_location_lng), "16.372409");
+
+        if (lat != null && lng != null) {
+            mLastLocation = new Location("");
+            mLastLocation.setLatitude(Double.parseDouble(lat));
+            mLastLocation.setLongitude(Double.parseDouble(lng));
+
+            Log.i(TAG, "Restored last location from shared preferences");
+        }
     }
 
     @Override
@@ -69,8 +83,18 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onStop() {
         super.onStop();
+
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
+        }
+
+        if (mLastLocation != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = preferences.edit();
+
+            editor.putString(getString(R.string.pref_last_location_lat), Double.toString(mLastLocation.getLatitude()));
+            editor.putString(getString(R.string.pref_last_location_lng), Double.toString(mLastLocation.getLongitude()));
+            editor.apply();
         }
     }
 
@@ -110,7 +134,10 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (location != null)
+            mLastLocation = location;
+
         startLocationUpdates();
     }
 
@@ -146,19 +173,21 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
-        Log.i(TAG, "Location update = Lat: " + location.getLatitude() + " Lng: " + location.getLongitude());
+        if (location != null) {
+            mLastLocation = location;
+            Log.i(TAG, "Location update = Lat: " + location.getLatitude() + " Lng: " + location.getLongitude());
+        }
     }
 
     /**
      * returns the last known location
-     * @return returns last location, or center of vienna as fallback
+     * @return returns last location
      */
     public LatLng getLastLocation() {
         if (mLastLocation != null)
             return new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         else
-            return new LatLng(48.208701, 16.372409);
+            return null;
     }
 
     //endregion

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,12 +52,10 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        mMap.setMyLocationEnabled(true);
         mLastLocation = getLastLocation();
 
-        // center the map to the current location
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mLastLocation, 13);
-        mMap.animateCamera(cameraUpdate);
+        mMap.setMyLocationEnabled(true);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastLocation, 13));
 
         showEvents();
     }
