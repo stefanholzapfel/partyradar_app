@@ -35,7 +35,7 @@ public class EventListFragment extends Fragment {
     }
 
     private void updateLastLocation() {
-        // get last known position from parent / main activity
+        // get last known location from parent / main activity
         MainActivity mainActivity = (MainActivity) getActivity();
         mLastLocation = mainActivity.getLastLocation();
     }

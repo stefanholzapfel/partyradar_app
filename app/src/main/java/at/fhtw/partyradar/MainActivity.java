@@ -26,8 +26,8 @@ public class MainActivity extends ActionBarActivity implements
 
     private static final int MILLISECONDS_PER_SECOND = 1000;
     private static final int UPDATE_INTERVAL_IN_SECONDS = 10;
-    private static final long UPDATE_INTERVAL = MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
     private static final int FASTEST_INTERVAL_IN_SECONDS = 5;
+    private static final long UPDATE_INTERVAL = MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
     private static final long FASTEST_INTERVAL = MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
 
     @Override
@@ -47,14 +47,12 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-
         mGoogleApiClient.connect();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         if (mGoogleApiClient.isConnected()) {
             startLocationUpdates();
         }
@@ -63,7 +61,6 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-
         if (mGoogleApiClient.isConnected()) {
             stopLocationUpdates();
         }
@@ -72,7 +69,6 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }

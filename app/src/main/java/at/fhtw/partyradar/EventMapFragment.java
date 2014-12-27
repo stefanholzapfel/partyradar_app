@@ -20,7 +20,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import static at.fhtw.partyradar.helper.Utility.*;
 
-
 public class EventMapFragment extends Fragment implements OnMapReadyCallback {
 
     protected static final String TAG = "EventMapFragment";
