@@ -162,7 +162,7 @@ public class MainActivity extends ActionBarActivity implements
         if (mLastLocation != null)
             return new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         else
-            return new LatLng(48.208174, 16.373819);
+            return new LatLng(48.208701, 16.372409);
     }
 
     //endregion

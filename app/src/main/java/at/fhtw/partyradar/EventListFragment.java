@@ -28,11 +28,15 @@ public class EventListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        // get last known position from parent / main activity
-        MainActivity mainActivity = (MainActivity) getActivity();
-        mLastPosition = mainActivity.getLastLocation();
+        updateLastPosition();
 
         TextView textView = (TextView) getActivity().findViewById(R.id.text_position);
         textView.setText("Lat: " + mLastPosition.latitude + " Lng: " + mLastPosition.longitude);
+    }
+
+    private void updateLastPosition() {
+        // get last known position from parent / main activity
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mLastPosition = mainActivity.getLastLocation();
     }
 }
