@@ -61,8 +61,8 @@ public class TestDb extends AndroidTestCase {
 
     static ContentValues createEventValues(String _id) {
         ContentValues eventValues = new ContentValues();
-        double lat = 48.216618;
-        double lng = 16.393059;
+        double lat = 48.21;
+        double lng = 16.39;
 
         eventValues.put(EventEntry.COLUMN_EVENT_ID, _id);
         eventValues.put(EventEntry.COLUMN_TITLE, "Jungle Feever Party!");
@@ -71,10 +71,10 @@ public class TestDb extends AndroidTestCase {
         eventValues.put(EventEntry.COLUMN_KEYWORDS, "#Jungle#Feever#Party");
         eventValues.put(EventEntry.COLUMN_LONGITUDE, lng);
         eventValues.put(EventEntry.COLUMN_LATITUDE, lat);
-        eventValues.put(EventEntry.COLUMN_COSLNG, Math.cos(Utility.deg2rad(lng)));
-        eventValues.put(EventEntry.COLUMN_SINLNG, Math.sin(Utility.deg2rad(lng)));
-        eventValues.put(EventEntry.COLUMN_COSLAT, Math.cos(Utility.deg2rad(lat)));
-        eventValues.put(EventEntry.COLUMN_SINLAT, Math.sin(Utility.deg2rad(lat)));
+        eventValues.put(EventEntry.COLUMN_COSLNG, 1); //Math.cos(Utility.deg2rad(lng)));
+        eventValues.put(EventEntry.COLUMN_SINLNG, 1); //Math.sin(Utility.deg2rad(lng)));
+        eventValues.put(EventEntry.COLUMN_COSLAT, 1); //Math.cos(Utility.deg2rad(lat)));
+        eventValues.put(EventEntry.COLUMN_SINLAT, 1); //Math.sin(Utility.deg2rad(lat)));
         eventValues.put(EventEntry.COLUMN_LOCATION_NAME, "Jungle Bar");
         eventValues.put(EventEntry.COLUMN_ZIPCODE, "1010");
         eventValues.put(EventEntry.COLUMN_CITY, "Vienna");
@@ -84,8 +84,8 @@ public class TestDb extends AndroidTestCase {
 
     static ContentValues createDetailedEventValues(String _id) {
         ContentValues eventValues = new ContentValues();
-        double lat = 48.216618;
-        double lng = 16.393059;
+        double lat = 48.21;
+        double lng = 16.39;
 
         eventValues.put(EventEntry.COLUMN_EVENT_ID, _id);
         eventValues.put(EventEntry.COLUMN_TITLE, "Jungle Feever Party!");
@@ -94,10 +94,10 @@ public class TestDb extends AndroidTestCase {
         eventValues.put(EventEntry.COLUMN_KEYWORDS, "#Jungle#Feever#Party");
         eventValues.put(EventEntry.COLUMN_LONGITUDE, lng);
         eventValues.put(EventEntry.COLUMN_LATITUDE, lat);
-        eventValues.put(EventEntry.COLUMN_COSLNG, Math.cos(Utility.deg2rad(lng)));
-        eventValues.put(EventEntry.COLUMN_SINLNG, Math.sin(Utility.deg2rad(lng)));
-        eventValues.put(EventEntry.COLUMN_COSLAT, Math.cos(Utility.deg2rad(lat)));
-        eventValues.put(EventEntry.COLUMN_SINLAT, Math.sin(Utility.deg2rad(lat)));
+        eventValues.put(EventEntry.COLUMN_COSLNG, 1); //Math.cos(Utility.deg2rad(lng)));
+        eventValues.put(EventEntry.COLUMN_SINLNG, 1); //Math.sin(Utility.deg2rad(lng)));
+        eventValues.put(EventEntry.COLUMN_COSLAT, 1); //Math.cos(Utility.deg2rad(lat)));
+        eventValues.put(EventEntry.COLUMN_SINLAT, 1); //Math.sin(Utility.deg2rad(lat)));
         eventValues.put(EventEntry.COLUMN_LOCATION_NAME, "Jungle Bar");
         eventValues.put(EventEntry.COLUMN_ZIPCODE, "1010");
         eventValues.put(EventEntry.COLUMN_CITY, "Vienna");
