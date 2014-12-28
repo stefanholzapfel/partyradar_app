@@ -131,7 +131,4 @@ public class BackgroundLocationService extends Service implements
 
         super.onDestroy();
     }
-
-
-
 }
