@@ -11,6 +11,7 @@ import java.util.Set;
 
 import at.fhtw.partyradar.data.EventDbHelper;
 import at.fhtw.partyradar.data.EventContract.EventEntry;
+import at.fhtw.partyradar.helper.Utility;
 
 /**
  * Created by Stefan on 27.12.2014.
@@ -60,13 +61,20 @@ public class TestDb extends AndroidTestCase {
 
     static ContentValues createEventValues(String _id) {
         ContentValues eventValues = new ContentValues();
+        double lat = 48.216618;
+        double lng = 16.393059;
+
         eventValues.put(EventEntry.COLUMN_EVENT_ID, _id);
         eventValues.put(EventEntry.COLUMN_TITLE, "Jungle Feever Party!");
         eventValues.put(EventEntry.COLUMN_START, "2014122311111");
         eventValues.put(EventEntry.COLUMN_END, "2014122311113");
         eventValues.put(EventEntry.COLUMN_KEYWORDS, "#Jungle#Feever#Party");
-        eventValues.put(EventEntry.COLUMN_LONGITUDE, 1);
-        eventValues.put(EventEntry.COLUMN_LATITUDE, 2);
+        eventValues.put(EventEntry.COLUMN_LONGITUDE, lng);
+        eventValues.put(EventEntry.COLUMN_LATITUDE, lat);
+        eventValues.put(EventEntry.COLUMN_COSLNG, Math.cos(Utility.deg2rad(lng)));
+        eventValues.put(EventEntry.COLUMN_SINLNG, Math.sin(Utility.deg2rad(lng)));
+        eventValues.put(EventEntry.COLUMN_COSLAT, Math.cos(Utility.deg2rad(lat)));
+        eventValues.put(EventEntry.COLUMN_SINLAT, Math.sin(Utility.deg2rad(lat)));
         eventValues.put(EventEntry.COLUMN_LOCATION_NAME, "Jungle Bar");
         eventValues.put(EventEntry.COLUMN_ZIPCODE, "1010");
         eventValues.put(EventEntry.COLUMN_CITY, "Vienna");
@@ -76,13 +84,20 @@ public class TestDb extends AndroidTestCase {
 
     static ContentValues createDetailedEventValues(String _id) {
         ContentValues eventValues = new ContentValues();
+        double lat = 48.216618;
+        double lng = 16.393059;
+
         eventValues.put(EventEntry.COLUMN_EVENT_ID, _id);
         eventValues.put(EventEntry.COLUMN_TITLE, "Jungle Feever Party!");
         eventValues.put(EventEntry.COLUMN_START, "2014122311111");
         eventValues.put(EventEntry.COLUMN_END, "2014122311113");
         eventValues.put(EventEntry.COLUMN_KEYWORDS, "#Jungle#Feever#Party");
-        eventValues.put(EventEntry.COLUMN_LONGITUDE, 1);
-        eventValues.put(EventEntry.COLUMN_LATITUDE, 2);
+        eventValues.put(EventEntry.COLUMN_LONGITUDE, lng);
+        eventValues.put(EventEntry.COLUMN_LATITUDE, lat);
+        eventValues.put(EventEntry.COLUMN_COSLNG, Math.cos(Utility.deg2rad(lng)));
+        eventValues.put(EventEntry.COLUMN_SINLNG, Math.sin(Utility.deg2rad(lng)));
+        eventValues.put(EventEntry.COLUMN_COSLAT, Math.cos(Utility.deg2rad(lat)));
+        eventValues.put(EventEntry.COLUMN_SINLAT, Math.sin(Utility.deg2rad(lat)));
         eventValues.put(EventEntry.COLUMN_LOCATION_NAME, "Jungle Bar");
         eventValues.put(EventEntry.COLUMN_ZIPCODE, "1010");
         eventValues.put(EventEntry.COLUMN_CITY, "Vienna");

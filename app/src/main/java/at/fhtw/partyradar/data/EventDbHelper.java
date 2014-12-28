@@ -27,6 +27,10 @@ public class EventDbHelper extends SQLiteOpenHelper {
                 EventEntry.COLUMN_KEYWORDS + " TEXT NOT NULL, " +
                 EventEntry.COLUMN_LONGITUDE + " DOUBLE NOT NULL, " +
                 EventEntry.COLUMN_LATITUDE + " DOUBLE NOT NULL, " +
+                EventEntry.COLUMN_COSLNG + " DOUBLE NOT NULL, " +
+                EventEntry.COLUMN_SINLNG + " DOUBLE NOT NULL, " +
+                EventEntry.COLUMN_COSLAT + " DOUBLE NOT NULL, " +
+                EventEntry.COLUMN_SINLAT + " DOUBLE NOT NULL, " +
                 EventEntry.COLUMN_LOCATION_NAME + " TEXT NOT NULL, " +
                 EventEntry.COLUMN_ZIPCODE + " TEXT NOT NULL, " +
                 EventEntry.COLUMN_CITY + " TEXT NOT NULL, " +

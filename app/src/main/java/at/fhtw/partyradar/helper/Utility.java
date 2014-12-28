@@ -7,6 +7,9 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import at.fhtw.partyradar.R;
 
 public class Utility {
@@ -66,8 +69,20 @@ public class Utility {
         return d;
     }
 
-    private static double deg2rad(double degree) {
+    public static double deg2rad(double degree) {
         return degree * (Math.PI/180);
+    }
+
+    public static double rad2km(double rad) {
+        return 6371 * Math.acos(rad);
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 }

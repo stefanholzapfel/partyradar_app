@@ -5,7 +5,10 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+
+import at.fhtw.partyradar.helper.Utility;
 
 /**
  * Created by Stefan on 27.12.2014.
@@ -18,6 +21,7 @@ public class EventProvider extends ContentProvider {
 
     private static final int EVENT = 100;
     private static final int EVENT_ID = 101;
+    private static final int EVENT_AREA = 102;
 
     @Override
     public boolean onCreate() {
@@ -28,9 +32,12 @@ public class EventProvider extends ContentProvider {
      private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = EventContract.CONTENT_AUTHORITY;
+
         // all possible URIs
         matcher.addURI(authority, EventContract.PATH_EVENT, EVENT);
         matcher.addURI(authority, EventContract.PATH_EVENT + "/*", EVENT_ID);
+        matcher.addURI(authority, EventContract.PATH_EVENTAREA, EVENT_AREA);
+
         return matcher;
     }
 
@@ -40,6 +47,8 @@ public class EventProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case EVENT:
+                return EventContract.EventEntry.CONTENT_TYPE;
+            case EVENT_AREA:
                 return EventContract.EventEntry.CONTENT_TYPE;
             case EVENT_ID:
                 return EventContract.EventEntry.CONTENT_ITEM_TYPE;
@@ -65,6 +74,26 @@ public class EventProvider extends ContentProvider {
                         null,
                         sortOrder
                 );
+                break;
+            }
+            // "event_area"
+            case EVENT_AREA: {
+                Double radius = Double.parseDouble(EventContract.EventEntry.getRadiusFromUri(uri));
+                double lat = Double.parseDouble(EventContract.EventEntry.getLatFromUri(uri));
+                double lng = Double.parseDouble(EventContract.EventEntry.getLngFromUri(uri));
+
+                double coslat = Math.cos(Utility.deg2rad(lat));
+                double sinlat = Math.sin(Utility.deg2rad(lat));
+                double coslng = Math.cos(Utility.deg2rad(lng));
+                double sinlng = Math.sin(Utility.deg2rad(lng));
+
+                retCursor = mOpenHelper.getReadableDatabase()
+                        .rawQuery("SELECT *, " +
+                            "( " + coslat + " * coslat * (coslng * " + coslng + " + sinlng * " + sinlng + ") + " + sinlat + " * sinlat) AS " + EventContract.EventEntry.COLUMN_DISTANCE + " " +
+                            "FROM " + EventContract.EventEntry.TABLE_NAME + " " +
+                            "WHERE distance > " + Math.cos(radius / 6371.0) + " " +
+                            "ORDER BY distance DESC",
+                        selectionArgs);
                 break;
             }
             // "event/*"
