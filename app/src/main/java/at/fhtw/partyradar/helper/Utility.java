@@ -69,14 +69,30 @@ public class Utility {
         return d;
     }
 
+    /**
+     * converts degree to rad
+     * @param degree
+     * @return
+     */
     public static double deg2rad(double degree) {
         return degree * (Math.PI/180);
     }
 
+    /**
+     * concerts rad value to kilometers
+     * @param rad
+     * @return
+     */
     public static double rad2km(double rad) {
         return 6371 * Math.acos(rad);
     }
 
+    /**
+     * rounds a double
+     * @param value
+     * @param places
+     * @return
+     */
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 

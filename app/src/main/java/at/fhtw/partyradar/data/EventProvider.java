@@ -78,7 +78,7 @@ public class EventProvider extends ContentProvider {
             }
             // "event_area"
             case EVENT_AREA: {
-                Double radius = Double.parseDouble(EventContract.EventEntry.getRadiusFromUri(uri));
+                double radius = Double.parseDouble(EventContract.EventEntry.getRadiusFromUri(uri));
                 double lat = Double.parseDouble(EventContract.EventEntry.getLatFromUri(uri));
                 double lng = Double.parseDouble(EventContract.EventEntry.getLngFromUri(uri));
 
