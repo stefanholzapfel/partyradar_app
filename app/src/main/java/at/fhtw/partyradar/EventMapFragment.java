@@ -29,14 +29,13 @@ import static at.fhtw.partyradar.helper.Utility.*;
 
 public class EventMapFragment extends Fragment implements OnMapReadyCallback {
 
-    protected static final String TAG = "EventMapFragment";
+    protected static final String LOG_TAG = "EventMapFragment";
 
     private GoogleMap mMap;
     private LatLng mLastPosition;
     private LatLng mMapCenter;
 
     private BroadcastReceiver mReceiver;
-    private IntentFilter mIntentFilter;
 
     public EventMapFragment() {
         // Required empty public constructor
@@ -47,7 +46,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
 
         // prepare and register for broadcasts of location updates
-        mIntentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
+        IntentFilter intentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -57,7 +56,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
             }
         };
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, mIntentFilter);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
 
         mLastPosition = Utility.getPositionFromStorage(getActivity());
     }
@@ -105,7 +104,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
      */
     private void getEvents(LatLng center, double radius) {
         // TODO: replace by ContentProvider
-        Log.i(TAG, "Center = Lat:" + center.latitude + " Lng:" + center.longitude + " Radius: " + radius);
+        Log.d(LOG_TAG, "Center = Lat:" + center.latitude + " Lng:" + center.longitude + " Radius: " + radius);
     }
 
     /**

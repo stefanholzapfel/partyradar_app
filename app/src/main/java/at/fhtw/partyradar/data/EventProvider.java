@@ -5,14 +5,10 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 import at.fhtw.partyradar.helper.Utility;
 
-/**
- * Created by Stefan on 27.12.2014.
- */
 public class EventProvider extends ContentProvider {
 
     // the URI Matcher used by this content provider.

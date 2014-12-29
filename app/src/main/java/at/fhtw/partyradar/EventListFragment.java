@@ -19,11 +19,10 @@ import at.fhtw.partyradar.service.BackgroundLocationService;
 
 public class EventListFragment extends Fragment {
 
-    protected static final String TAG = "EventListFragment";
+    //protected static final String LOG_TAG = "EventListFragment";
 
     private LatLng mLastPosition;
     private BroadcastReceiver mReceiver;
-    private IntentFilter mIntentFilter;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -34,7 +33,7 @@ public class EventListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // prepare and register for broadcasts of location updates
-        mIntentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
+        IntentFilter intentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -45,7 +44,7 @@ public class EventListFragment extends Fragment {
                 showLastLocation();
             }
         };
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, mIntentFilter);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
 
         mLastPosition = Utility.getPositionFromStorage(getActivity());
     }

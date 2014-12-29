@@ -16,8 +16,8 @@ public class Utility {
 
     /**
      * returns the position from the storage (or returns the default position)
-     * @param context
-     * @return
+     * @param context context of the app
+     * @return Latitude and Longitude of the position
      */
     public static LatLng getPositionFromStorage(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -31,8 +31,8 @@ public class Utility {
 
     /**
      * stores a position in the storage
-     * @param context
-     * @param location
+     * @param context context of the app
+     * @param location location to be stored
      */
     public static void storePositionInStorage(Context context, Location location) {
         if (location != null) {
@@ -65,14 +65,11 @@ public class Utility {
                                 Math.sin(dLon/2) * Math.sin(dLon/2)
                 ;
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double d = R * c; // Distance in km
-        return d;
+        return R * c; // Distance in km
     }
 
     /**
      * converts degree to rad
-     * @param degree
-     * @return
      */
     public static double deg2rad(double degree) {
         return degree * (Math.PI/180);
@@ -80,8 +77,6 @@ public class Utility {
 
     /**
      * concerts rad value to kilometers
-     * @param rad
-     * @return
      */
     public static double rad2km(double rad) {
         return 6371 * Math.acos(rad);
@@ -89,9 +84,6 @@ public class Utility {
 
     /**
      * rounds a double
-     * @param value
-     * @param places
-     * @return
      */
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();

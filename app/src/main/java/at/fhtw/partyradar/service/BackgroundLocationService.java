@@ -16,13 +16,11 @@ import com.google.android.gms.location.LocationListener;
 
 import at.fhtw.partyradar.helper.Utility;
 
-/**
- * Created by Stefan on 27.12.2014.
- */
 public class BackgroundLocationService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
-    protected static final String TAG = "BackgroundLocationService";
+    protected static final String LOG_TAG = "BackgroundLocationService";
+
     public static final String BROADCAST_ACTION = "at.fhtw.partyradar.LOCATIONUPDATE";
     public static final String BROADCAST_DATA = "at.fhtw.partyradar.LOCATIONDATA";
 
@@ -73,17 +71,13 @@ public class BackgroundLocationService extends Service implements
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        //Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
+        //Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        //Log.i(TAG, "Connection suspended");
+        //Log.i(LOG_TAG, "Connection suspended");
         mGoogleApiClient.connect();
-    }
-
-    public void onDisconnected() {
-        //Log.i(TAG, "Disconnected");
     }
 
     protected void startLocationUpdates() {
@@ -97,7 +91,7 @@ public class BackgroundLocationService extends Service implements
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
-            Log.i(TAG, "Location update = Lat: " + location.getLatitude() + " Lng: " + location.getLongitude());
+            Log.d(LOG_TAG, "Location update = Lat: " + location.getLatitude() + " Lng: " + location.getLongitude());
 
             Utility.storePositionInStorage(this, location);
             broadcastLocation(location);
@@ -107,7 +101,6 @@ public class BackgroundLocationService extends Service implements
 
     /**
      * broadcasts the location to all registered broadcast receivers
-     * @param location
      */
     private void broadcastLocation(Location location) {
         Intent locationIntent = new Intent(BROADCAST_ACTION).putExtra(BROADCAST_DATA, location.getLatitude() + "|" + location.getLongitude());
@@ -116,7 +109,7 @@ public class BackgroundLocationService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "BackgroundLocationService started");
+        Log.i(LOG_TAG, "BackgroundLocationService started");
         mGoogleApiClient.connect();
 
         return super.onStartCommand(intent, flags, startId);
@@ -124,7 +117,7 @@ public class BackgroundLocationService extends Service implements
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "BackgroundLocationService destroyed");
+        Log.i(LOG_TAG, "BackgroundLocationService destroyed");
 
         stopLocationUpdates();
         mGoogleApiClient.disconnect();

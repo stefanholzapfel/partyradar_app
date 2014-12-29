@@ -6,9 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import at.fhtw.partyradar.data.EventContract.EventEntry;
 
-/**
- * Created by Stefan on 27.12.2014.
- */
 public class EventDbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "event.db";

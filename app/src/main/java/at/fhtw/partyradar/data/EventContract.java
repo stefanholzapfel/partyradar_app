@@ -3,9 +3,6 @@ package at.fhtw.partyradar.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-/**
- * Created by Stefan on 27.12.2014.
- */
 public class EventContract {
 
     public static final String CONTENT_AUTHORITY = "at.fhtw.partyradar.app";

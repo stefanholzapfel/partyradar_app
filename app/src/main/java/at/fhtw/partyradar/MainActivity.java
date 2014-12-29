@@ -11,7 +11,7 @@ import at.fhtw.partyradar.service.BackgroundLocationService;
 
 public class MainActivity extends ActionBarActivity {
 
-    protected static final String TAG = "MainActivity";
+    //protected static final String LOG_TAG = "MainActivity";
 
     private Intent mServiceIntent;
 
