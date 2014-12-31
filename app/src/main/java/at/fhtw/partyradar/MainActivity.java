@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import at.fhtw.partyradar.service.BackgroundLocationService;
+import at.fhtw.partyradar.service.FetchDataService;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -33,6 +34,9 @@ public class MainActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         startService(mServiceIntent);
+
+        Intent intent = new Intent(this, FetchDataService.class);
+        startService(intent);
     }
 
     @Override

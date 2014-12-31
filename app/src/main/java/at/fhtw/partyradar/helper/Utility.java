@@ -9,6 +9,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import at.fhtw.partyradar.R;
 
@@ -53,11 +55,11 @@ public class Utility {
      * @param lon1 longitude from point 1
      * @param lat2 latitude from point 2
      * @param lon2 longitude from point 1
-     * @return distance in km
+     * @return distance in meter
      */
     public static double getDistance(double lat1, double lon1, double lat2, double lon2) {
-        double R = 6371; // Radius of the earth in km
-        double dLat = deg2rad(lat2-lat1);  // deg2rad below
+        double R = 6371;                        // Radius of the earth in km
+        double dLat = deg2rad(lat2-lat1);       // deg2rad below
         double dLon = deg2rad(lon2-lon1);
         double a =
                 Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -65,7 +67,19 @@ public class Utility {
                                 Math.sin(dLon/2) * Math.sin(dLon/2)
                 ;
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c; // Distance in km
+        return R * c * 1000; // Distance in meter
+    }
+
+    public static String dbDate2Text(String dbDate) {
+        // 2014-12-31T23:00:00
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date dt = df.parse(dbDate);
+            String newFormat = new SimpleDateFormat("yyyyMMddHHmm").format(dt);
+            return newFormat;
+        } catch (Exception ex) {
+            return "";
+        }
     }
 
     /**
@@ -76,10 +90,10 @@ public class Utility {
     }
 
     /**
-     * concerts rad value to kilometers
+     * concerts rad value to meters
      */
-    public static double rad2km(double rad) {
-        return 6371 * Math.acos(rad);
+    public static double rad2meter(double rad) {
+        return 6371 * Math.acos(rad) * 1000;
     }
 
     /**
