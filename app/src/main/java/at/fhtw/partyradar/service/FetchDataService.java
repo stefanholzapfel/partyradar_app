@@ -1,7 +1,9 @@
 package at.fhtw.partyradar.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -32,6 +34,15 @@ public class FetchDataService extends IntentService {
 
     public FetchDataService() {
         super("FetchDataService");
+    }
+
+    static public class AlarmReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Intent sendIntent = new Intent(context, FetchDataService.class);
+            context.startService(sendIntent);
+        }
     }
 
     @Override

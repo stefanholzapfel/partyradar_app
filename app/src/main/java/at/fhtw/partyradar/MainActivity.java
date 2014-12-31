@@ -1,5 +1,8 @@
 package at.fhtw.partyradar;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,6 +18,7 @@ public class MainActivity extends ActionBarActivity {
     //protected static final String LOG_TAG = "MainActivity";
 
     private Intent mServiceIntent;
+    private PendingIntent mDataPendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,16 +37,25 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // TODO: Remove BackgroundService if not necessary for other issues
         startService(mServiceIntent);
 
-        Intent intent = new Intent(this, FetchDataService.class);
-        startService(intent);
+        Intent alarmIntent = new Intent(this, FetchDataService.AlarmReceiver.class);
+        mDataPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 600000, mDataPendingIntent);     // 10 minutes * 60 seconds * 1000 = 600000 milliseconds
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+
         stopService(mServiceIntent);
+
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(mDataPendingIntent);
     }
 
     @Override

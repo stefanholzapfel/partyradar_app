@@ -45,6 +45,9 @@
         <service android:name=".service.FetchDataService"
             android:exported="false"/>
 
+        <receiver android:name=".service.FetchDataService$AlarmReceiver"
+            android:enabled="true" />
+
         <!--
         <service
             android:name=".sync.AuthenticatorService">
