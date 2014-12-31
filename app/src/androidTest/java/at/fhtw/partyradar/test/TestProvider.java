@@ -7,11 +7,7 @@ import android.test.AndroidTestCase;
 import android.util.Log;
 
 import at.fhtw.partyradar.data.EventContract.EventEntry;
-import at.fhtw.partyradar.helper.Utility;
 
-/**
- * Created by Stefan on 27.12.2014.
- */
 public class TestProvider extends AndroidTestCase {
 
     public static final String LOG_TAG = TestProvider.class.getSimpleName();
@@ -76,7 +72,7 @@ public class TestProvider extends AndroidTestCase {
         cursor.close();
 
         cursor = mContext.getContentResolver().query(
-                EventEntry.buildEventWithinArea("48.192835", "16.438592", "5"),
+                EventEntry.buildEventWithinArea(48.192835, 16.438592, 50000),
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause
@@ -118,7 +114,7 @@ public class TestProvider extends AndroidTestCase {
         String locationRowId = EventEntry.getIdFromUri(locationUri);
 
         // Verify we got a row back.
-        assertTrue(!locationRowId.equals("")  && locationRowId != null );
+        assertTrue(!locationRowId.equals("") && locationRowId != null );
         Log.d(LOG_TAG, "New row id: " + locationRowId);
 
         ContentValues updatedValues = new ContentValues(values);

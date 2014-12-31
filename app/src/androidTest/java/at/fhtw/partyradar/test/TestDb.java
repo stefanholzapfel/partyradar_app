@@ -11,11 +11,7 @@ import java.util.Set;
 
 import at.fhtw.partyradar.data.EventDbHelper;
 import at.fhtw.partyradar.data.EventContract.EventEntry;
-import at.fhtw.partyradar.helper.Utility;
 
-/**
- * Created by Stefan on 27.12.2014.
- */
 public class TestDb extends AndroidTestCase {
     public static final String LOG_TAG = TestDb.class.getSimpleName();
 
@@ -66,8 +62,8 @@ public class TestDb extends AndroidTestCase {
 
         eventValues.put(EventEntry.COLUMN_EVENT_ID, _id);
         eventValues.put(EventEntry.COLUMN_TITLE, "Jungle Feever Party!");
-        eventValues.put(EventEntry.COLUMN_START, "2014122311111");
-        eventValues.put(EventEntry.COLUMN_END, "2014122311113");
+        eventValues.put(EventEntry.COLUMN_START, "201412231111");
+        eventValues.put(EventEntry.COLUMN_END, "201412231113");
         eventValues.put(EventEntry.COLUMN_KEYWORDS, "#Jungle#Feever#Party");
         eventValues.put(EventEntry.COLUMN_LONGITUDE, lng);
         eventValues.put(EventEntry.COLUMN_LATITUDE, lat);
@@ -89,8 +85,8 @@ public class TestDb extends AndroidTestCase {
 
         eventValues.put(EventEntry.COLUMN_EVENT_ID, _id);
         eventValues.put(EventEntry.COLUMN_TITLE, "Jungle Feever Party!");
-        eventValues.put(EventEntry.COLUMN_START, "2014122311111");
-        eventValues.put(EventEntry.COLUMN_END, "2014122311113");
+        eventValues.put(EventEntry.COLUMN_START, "201412231111");
+        eventValues.put(EventEntry.COLUMN_END, "201412231113");
         eventValues.put(EventEntry.COLUMN_KEYWORDS, "#Jungle#Feever#Party");
         eventValues.put(EventEntry.COLUMN_LONGITUDE, lng);
         eventValues.put(EventEntry.COLUMN_LATITUDE, lat);

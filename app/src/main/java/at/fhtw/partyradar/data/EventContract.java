@@ -50,8 +50,15 @@ public class EventContract {
             return Uri.parse(BASE_CONTENT_URI + "/" + PATH_EVENT + "/" + id);
         }
 
-        public static Uri buildEventWithinArea(String lat, String lng, String radius) {
-            return BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENTAREA).appendQueryParameter(QUERYPARAM_RADIUS, radius).appendQueryParameter(COLUMN_LATITUDE, lat).appendQueryParameter(COLUMN_LONGITUDE, lng).build();
+        /**
+         * builds URI for all events within an area (no time frame)
+         * @param latitude latitude of center position
+         * @param longitude longitude of center position
+         * @param radius radius in meters
+         * @return
+         */
+        public static Uri buildEventWithinArea(double latitude, double longitude, double radius) {
+            return BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENTAREA).appendQueryParameter(QUERYPARAM_RADIUS, Double.toString(radius)).appendQueryParameter(COLUMN_LATITUDE, Double.toString(latitude)).appendQueryParameter(COLUMN_LONGITUDE, Double.toString(longitude)).build();
         }
 
         public static String getIdFromUri(Uri uri) {

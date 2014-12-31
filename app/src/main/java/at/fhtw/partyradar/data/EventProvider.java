@@ -74,7 +74,7 @@ public class EventProvider extends ContentProvider {
             }
             // "event_area"
             case EVENT_AREA: {
-                double radius = Double.parseDouble(EventContract.EventEntry.getRadiusFromUri(uri));
+                double radius = Double.parseDouble(EventContract.EventEntry.getRadiusFromUri(uri)) / 1000;      // for radius in km
                 double lat = Double.parseDouble(EventContract.EventEntry.getLatFromUri(uri));
                 double lng = Double.parseDouble(EventContract.EventEntry.getLngFromUri(uri));
 
@@ -183,6 +183,9 @@ public class EventProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
+
+                        // TODO: Update, if it exists already
+
                         long _id = db.insert(EventContract.EventEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
