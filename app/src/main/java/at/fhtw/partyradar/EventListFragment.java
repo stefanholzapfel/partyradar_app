@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.helper.Utility;
 import at.fhtw.partyradar.service.BackgroundLocationService;
 
@@ -41,7 +43,7 @@ public class EventListFragment extends Fragment {
                 String[] latLngSplit = latLngString.split("\\|");
 
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
-                showLastLocation();
+                showEvents();
             }
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
@@ -57,7 +59,7 @@ public class EventListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        showLastLocation();
+        showEvents();
     }
 
     @Override
@@ -66,8 +68,17 @@ public class EventListFragment extends Fragment {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
     }
 
-    private void showLastLocation() {
-        TextView textView = (TextView) getActivity().findViewById(R.id.text_position);
-        textView.setText("Lat: " + mLastPosition.latitude + " Lng: " + mLastPosition.longitude);
+    private void showEvents() {
+        TextView textView_events = (TextView) getActivity().findViewById(R.id.text_events);
+
+        Cursor cursor = getActivity().getContentResolver().query(
+                EventContract.EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range))),
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
+
+        textView_events.setText("Lat: " + mLastPosition.latitude + " Lng: " + mLastPosition.longitude + " Count: " + cursor.getCount());
     }
 }

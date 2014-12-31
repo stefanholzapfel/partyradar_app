@@ -5,8 +5,8 @@
     tools:context="at.fhtw.partyradar.EventListFragment">
 
     <TextView
-        android:id="@+id/text_position"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_events"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 </FrameLayout>

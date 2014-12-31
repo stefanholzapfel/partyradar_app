@@ -4,10 +4,20 @@
     <string name="app_name">PartyRadar</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Preference keys for the last known location -->
     <string name="pref_last_location_lat" translatable="false">last_location_lat</string>
     <string name="pref_last_location_lng" translatable="false">last_location_lng</string>
 
+    <!-- Default location (vienna) -->
     <string name="default_location_lat" translatable="false">48.208701</string>
     <string name="default_location_lng" translatable="false">16.372409</string>
+
+    <!-- Max. range for requesting events in an area (in meters) -->
+    <string name="events_max_range" translatable="false">30000</string>
+
+    <!-- Account type (for sync-adapter authenticator) -->
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">partyradar.fhtw.at</string>
+    <string name="content_authority">at.fhtw.partyradar.app</string>
 
 </resources>
