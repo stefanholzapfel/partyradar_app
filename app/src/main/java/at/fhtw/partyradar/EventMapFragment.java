@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.helper.Utility;
 import at.fhtw.partyradar.service.BackgroundLocationService;
 
@@ -84,7 +86,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onCameraChange(CameraPosition position) {
                 mMapCenter = mMap.getCameraPosition().target;
-                getEvents(mMapCenter, calculateRadius());
+                showEvents(mMapCenter, calculateRadius());
             }
         });
 
@@ -94,41 +96,41 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 13));
         }
 
-        showEvents();
-    }
-
-    /**
-     * retrieved the Events for a specific area
-     * @param center center of area
-     * @param radius radius of area
-     */
-    private void getEvents(LatLng center, double radius) {
-        // TODO: replace by ContentProvider
-        Log.d(LOG_TAG, "Center = Lat:" + center.latitude + " Lng:" + center.longitude + " Radius: " + radius);
     }
 
     /**
      * shows the Events as marker on the map
+     * @param center center of area
+     * @param radius radius of area
      */
-    private void showEvents() {
+    private void showEvents(LatLng center, double radius) {
+        Log.d(LOG_TAG, "Center = Lat:" + center.latitude + " Lng:" + center.longitude + " Radius: " + radius);
         if (mMap != null) {
 
-            // TODO: replace by actual event data
-            // TODO: add intents to open event details
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(48.208174, 16.373819))
-                    .title("Event 1")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            mMap.clear();
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(48.21, 16.38))
-                    .title("Event 2")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            Cursor cursor = getActivity().getContentResolver().query(
+                    EventContract.EventEntry.buildEventWithinArea(center.latitude, center.longitude, radius),
+                    null, // leaving "columns" null just returns all the columns.
+                    null, // cols for "where" clause
+                    null, // values for "where" clause
+                    null  // sort order
+            );
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(48.20, 16.36))
-                    .title("Event 3")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+            while (cursor.moveToNext()) {
+                double event_latitude = cursor.getDouble(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_LATITUDE));
+                double event_longitude = cursor.getDouble(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_LONGITUDE));
+                String event_title = cursor.getString(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_TITLE));
+
+                // TODO: add intents to open event details
+
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(event_latitude, event_longitude))
+                        .title(event_title)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+            }
+
+            cursor.close();
         }
     }
 
@@ -137,10 +139,14 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
      * @return radius in km
      */
     private double calculateRadius() {
-        LatLngBounds currentMapScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
-        double diagonal = getDistance(currentMapScreen.northeast.latitude, currentMapScreen.northeast.longitude, currentMapScreen.southwest.latitude, currentMapScreen.southwest.longitude);
+        if (mMap != null) {
+            LatLngBounds currentMapScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
+            double diagonal = getDistance(currentMapScreen.northeast.latitude, currentMapScreen.northeast.longitude, currentMapScreen.southwest.latitude, currentMapScreen.southwest.longitude);
 
-        return diagonal / 2;
+            return diagonal / 2;
+        }
+        else
+            return 0;
     }
 
 }
