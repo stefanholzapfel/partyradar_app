@@ -47,7 +47,7 @@ public class FetchDataService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(LOG_TAG, "Starting update");
+        Log.i(LOG_TAG, "Starting update");
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -243,9 +243,12 @@ public class FetchDataService extends IntentService {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
 
+                // delete all events in database
+                getApplication().getContentResolver().delete(EventContract.EventEntry.CONTENT_URI, null, null);
+
+                // import
                 getApplication().getContentResolver().bulkInsert(EventContract.EventEntry.CONTENT_URI, cvArray);
 
-                // TODO: Delete old
             }
 
         } catch (JSONException e) {
@@ -253,6 +256,6 @@ public class FetchDataService extends IntentService {
             e.printStackTrace();
         }
 
-        return;
+        Log.i(LOG_TAG, "Finished update");
     }
 }
