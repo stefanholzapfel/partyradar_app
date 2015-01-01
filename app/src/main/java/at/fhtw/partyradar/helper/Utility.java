@@ -75,8 +75,7 @@ public class Utility {
         try {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date dt = df.parse(dbDate);
-            String newFormat = new SimpleDateFormat("yyyyMMddHHmm").format(dt);
-            return newFormat;
+            return new SimpleDateFormat("yyyyMMddHHmm").format(dt);
         } catch (Exception ex) {
             return "";
         }

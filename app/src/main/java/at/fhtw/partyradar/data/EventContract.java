@@ -55,7 +55,6 @@ public class EventContract {
          * @param latitude latitude of center position
          * @param longitude longitude of center position
          * @param radius radius in meters
-         * @return
          */
         public static Uri buildEventWithinArea(double latitude, double longitude, double radius) {
             return BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENTAREA).appendQueryParameter(QUERYPARAM_RADIUS, Double.toString(radius)).appendQueryParameter(COLUMN_LATITUDE, Double.toString(latitude)).appendQueryParameter(COLUMN_LONGITUDE, Double.toString(longitude)).build();

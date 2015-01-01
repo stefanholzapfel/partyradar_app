@@ -184,8 +184,6 @@ public class EventProvider extends ContentProvider {
                 try {
                     for (ContentValues value : values) {
 
-                        // TODO: Update, if it exists already
-
                         long _id = db.insert(EventContract.EventEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
@@ -195,6 +193,7 @@ public class EventProvider extends ContentProvider {
                 } finally {
                     db.endTransaction();
                 }
+
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
             default:

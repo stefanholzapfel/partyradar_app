@@ -17,7 +17,7 @@ public class MainActivity extends ActionBarActivity {
 
     //protected static final String LOG_TAG = "MainActivity";
 
-    private Intent mServiceIntent;
+    private Intent mLocationServiceIntent;
     private PendingIntent mDataPendingIntent;
 
     @Override
@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
         }
 
-        mServiceIntent = new Intent(this, BackgroundLocationService.class);
+        mLocationServiceIntent = new Intent(this, BackgroundLocationService.class);
     }
 
     @Override
@@ -39,8 +39,10 @@ public class MainActivity extends ActionBarActivity {
         super.onStart();
 
         // TODO: Remove BackgroundService if not necessary for other issues
-        startService(mServiceIntent);
+        // start background location service
+        startService(mLocationServiceIntent);
 
+        // set repeating data update task
         Intent alarmIntent = new Intent(this, FetchDataService.AlarmReceiver.class);
         mDataPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -52,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onStop() {
         super.onStop();
 
-        stopService(mServiceIntent);
+        stopService(mLocationServiceIntent);
 
         AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(mDataPendingIntent);

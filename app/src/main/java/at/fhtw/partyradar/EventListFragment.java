@@ -80,5 +80,7 @@ public class EventListFragment extends Fragment {
         );
 
         textView_events.setText("Lat: " + mLastPosition.latitude + " Lng: " + mLastPosition.longitude + " Count: " + cursor.getCount());
+
+        cursor.close();
     }
 }
