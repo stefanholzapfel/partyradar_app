@@ -39,6 +39,19 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
 
     private BroadcastReceiver mReceiver;
 
+    // Definition of the database's columns used by the loader
+    private static final String[] EVENT_COLUMNS = {
+            EventContract.EventEntry._ID,
+            EventContract.EventEntry.COLUMN_EVENT_ID,
+            EventContract.EventEntry.COLUMN_TITLE,
+            EventContract.EventEntry.COLUMN_LOCATION_NAME,
+            EventContract.EventEntry.COLUMN_ADDRESS,
+            EventContract.EventEntry.COLUMN_ADDRESS_ADDITIONS,
+            EventContract.EventEntry.COLUMN_CITY,
+            EventContract.EventEntry.COLUMN_LATITUDE,
+            EventContract.EventEntry.COLUMN_LONGITUDE
+    };
+
     public EventMapFragment() {
         // Required empty public constructor
     }
@@ -111,7 +124,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
 
             Cursor cursor = getActivity().getContentResolver().query(
                     EventContract.EventEntry.buildEventWithinArea(center.latitude, center.longitude, radius),
-                    null, // leaving "columns" null just returns all the columns.
+                    EVENT_COLUMNS, // columns to return
                     null, // cols for "where" clause
                     null, // values for "where" clause
                     null  // sort order
