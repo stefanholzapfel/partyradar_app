@@ -119,8 +119,10 @@ public class BackgroundLocationService extends Service implements
     public void onDestroy() {
         Log.i(LOG_TAG, "BackgroundLocationService destroyed");
 
-        stopLocationUpdates();
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+            mGoogleApiClient.disconnect();
+        }
 
         super.onDestroy();
     }
