@@ -17,19 +17,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="4"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <Button
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="MapFragment"
-            android:onClick="showMapFragment" />
+            android:orientation="horizontal">
 
-        <Button
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MapFragment"
+                android:onClick="showMapFragment" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ListFragment"
+                android:onClick="showListFragment" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login"
+                android:onClick="showLoginForm" />
+
+        </LinearLayout>
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ListFragment"
-            android:onClick="showListFragment" />
+            android:id="@+id/main_token"/>
 
     </LinearLayout>
 

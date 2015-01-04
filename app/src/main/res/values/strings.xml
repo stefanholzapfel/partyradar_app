@@ -15,9 +15,10 @@
     <!-- Max. range for requesting events in an area (in meters) -->
     <string name="events_max_range" translatable="false">30000</string>
 
-    <!-- Account type (for sync-adapter authenticator) -->
-    <!-- SyncAdapter related -->
-    <string name="sync_account_type">partyradar.fhtw.at</string>
+    <!-- for authenticator -->
+    <string name="auth_account_type">partyradar.fhtw.at</string>
     <string name="content_authority">at.fhtw.partyradar.app</string>
+    <string name="token_full_access_label">Full access to all events and locations</string>
+    <string name="title_activity_login">Log in</string>
 
 </resources>
