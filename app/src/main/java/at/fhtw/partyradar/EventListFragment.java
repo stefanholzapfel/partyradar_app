@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.LatLng;
 import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.helper.Utility;
 import at.fhtw.partyradar.service.BackgroundLocationService;
+import at.fhtw.partyradar.service.FetchDataService;
 
 public class EventListFragment extends Fragment {
 
@@ -43,6 +44,7 @@ public class EventListFragment extends Fragment {
                 String[] latLngSplit = latLngString.split("\\|");
 
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
+                //reloadEvents();
                 showEvents();
             }
         };
@@ -82,5 +84,11 @@ public class EventListFragment extends Fragment {
         textView_events.setText("Lat: " + mLastPosition.latitude + " Lng: " + mLastPosition.longitude + " Count: " + cursor.getCount());
 
         cursor.close();
+    }
+
+    private void reloadEvents() {
+        // triggers a data sync
+        Intent sendIntent = new Intent(getActivity(), FetchDataService.class);
+        getActivity().startService(sendIntent);
     }
 }
