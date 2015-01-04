@@ -8,9 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-/**
- * Created by Stefan on 04.01.2015.
- */
+import at.fhtw.partyradar.helper.Utility;
+
 public class EventListAdapter extends CursorAdapter {
 
     public EventListAdapter(Context context, Cursor c, int flags) {
@@ -40,8 +39,10 @@ public class EventListAdapter extends CursorAdapter {
         String addressAdditions = cursor.getString(EventListFragment.COL_ADDRESS_ADDITIONS);
         // Read city for small text view from cursor
         String city = cursor.getString(EventListFragment.COL_CITY);
+        // Read distance for small text view from cursor
+        Double distance = Utility.rad2meter(cursor.getDouble(EventListFragment.COL_DISTANCE));
         // Build string for small text view
-        String smallTextViewContent = locationName + " - " + address + " " + addressAdditions + " " + city;
+        String smallTextViewContent = locationName + " - " + address + " " + addressAdditions + " " + city + "  - Distance: " + Utility.round(distance / 1000, 2) + " km";
 
         viewHolder.largeTextView.setText(largeTextViewContent);
         viewHolder.smallTextView.setText(smallTextViewContent);

@@ -83,6 +83,15 @@ public class EventProvider extends ContentProvider {
                 double coslng = Math.cos(Utility.deg2rad(lng));
                 double sinlng = Math.sin(Utility.deg2rad(lng));
 
+                String[] extendedProjection = new String[projection.length + 1];
+                System.arraycopy(projection, 0, extendedProjection, 0, projection.length);
+                extendedProjection[extendedProjection.length - 1] = "( " + coslat + " * coslat * (coslng * " + coslng + " + sinlng * " + sinlng + ") + " + sinlat + " * sinlat) AS " + EventContract.EventEntry.COLUMN_DISTANCE;
+
+                String extendedSelection = null;
+                if (selection != null) extendedSelection += " AND distance > " + Double.toString(Math.cos(radius / 6371.0));
+                else extendedSelection = "distance > " + Double.toString(Math.cos(radius / 6371.0));
+
+                /*
                 retCursor = mOpenHelper.getReadableDatabase()
                         .rawQuery("SELECT *, " +
                             "( " + coslat + " * coslat * (coslng * " + coslng + " + sinlng * " + sinlng + ") + " + sinlat + " * sinlat) AS " + EventContract.EventEntry.COLUMN_DISTANCE + " " +
@@ -90,6 +99,17 @@ public class EventProvider extends ContentProvider {
                             "WHERE distance > " + Math.cos(radius / 6371.0) + " " +
                             "ORDER BY distance DESC",
                         selectionArgs);
+                */
+
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        EventContract.EventEntry.TABLE_NAME,
+                        extendedProjection,
+                        extendedSelection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
             }
             // "event/*"

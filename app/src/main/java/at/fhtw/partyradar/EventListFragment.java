@@ -54,6 +54,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     public static final int COL_ADDRESS = 4;
     public static final int COL_ADDRESS_ADDITIONS = 5;
     public static final int COL_CITY = 6;
+    public static final int COL_DISTANCE= 7;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -135,9 +136,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Building Uri for content provider
-        Uri eventsWithinAreaUri = EventEntry.CONTENT_URI;
-        // Contentprovider not yet funtional for this Uri:
-        //Uri eventsWithinAreaUri = EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range)));
+        Uri eventsWithinAreaUri = EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range)));
 
         // Creating and returning cursor
         return new CursorLoader(
