@@ -59,8 +59,10 @@ public class BackgroundLocationService extends Service implements
 
     @Override
     public void onConnected(Bundle connectionHint) {
+        // retrieve the last position known by the location API
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
+        // store the location in the local storage and broadcast it
         if (mLastLocation != null) {
             Utility.storePositionInStorage(this, mLastLocation);
             broadcastLocation(mLastLocation);
@@ -93,6 +95,7 @@ public class BackgroundLocationService extends Service implements
         if (location != null) {
             Log.d(LOG_TAG, "Location update = Lat: " + location.getLatitude() + " Lng: " + location.getLongitude());
 
+            // store the updated location in the local storage and broadcast it
             Utility.storePositionInStorage(this, location);
             broadcastLocation(location);
             mLastLocation = location;

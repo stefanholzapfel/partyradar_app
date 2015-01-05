@@ -70,6 +70,11 @@ public class Utility {
         return R * c * 1000; // Distance in meter
     }
 
+    /**
+     * converts a "database date" like returned by the service API to a text date
+     * @param dbDate date as "yyyy-MM-dd'T'HH:mm:ss"
+     * @return date as "yyyyMMddHHmm"
+     */
     public static String dbDate2Text(String dbDate) {
         // 2014-12-31T23:00:00
         try {

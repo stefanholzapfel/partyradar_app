@@ -49,13 +49,12 @@ public class FetchDataService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.i(LOG_TAG, "Starting update");
 
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         String eventsJsonStr = null;
 
+        // range filter
         LatLng lastPosition = Utility.getPositionFromStorage(this);
         Double radius = 30000.0;        // in meters
 
@@ -63,9 +62,9 @@ public class FetchDataService extends IntentService {
         Date dt = new Date();
         c.setTime(dt);
 
+        // time frame filter
         c.add(Calendar.DATE, -10);
         Date startDate = c.getTime();
-
         c.add(Calendar.DATE, 30);
         Date endDate = c.getTime();
 
@@ -88,8 +87,6 @@ public class FetchDataService extends IntentService {
                     .appendQueryParameter(QUERY_PARAM_END, endDateStr)
                     .build();
             URL url = new URL(builtUri.toString());
-
-            //Log.d(LOG_TAG, url.toString());
 
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");

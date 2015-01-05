@@ -72,21 +72,25 @@ public class EventProvider extends ContentProvider {
                 );
                 break;
             }
+
             // "event_area"
             case EVENT_AREA: {
                 double radius = Double.parseDouble(EventContract.EventEntry.getRadiusFromUri(uri)) / 1000;      // for radius in km
                 double lat = Double.parseDouble(EventContract.EventEntry.getLatFromUri(uri));
                 double lng = Double.parseDouble(EventContract.EventEntry.getLngFromUri(uri));
 
+                // required for the distance calculation (pre-calculating certain values, since SQLite cannot do that in the query)
                 double coslat = Math.cos(Utility.deg2rad(lat));
                 double sinlat = Math.sin(Utility.deg2rad(lat));
                 double coslng = Math.cos(Utility.deg2rad(lng));
                 double sinlng = Math.sin(Utility.deg2rad(lng));
 
+                // extending the projection of the query by a new column for the distance
                 String[] extendedProjection = new String[projection.length + 1];
                 System.arraycopy(projection, 0, extendedProjection, 0, projection.length);
                 extendedProjection[extendedProjection.length - 1] = "( " + coslat + " * coslat * (coslng * " + coslng + " + sinlng * " + sinlng + ") + " + sinlat + " * sinlat) AS " + EventContract.EventEntry.COLUMN_DISTANCE;
 
+                // extending the selection of the query by filtering for the distance
                 String extendedSelection = null;
                 if (selection != null) extendedSelection += " AND distance > " + Double.toString(Math.cos(radius / 6371.0));
                 else extendedSelection = "distance > " + Double.toString(Math.cos(radius / 6371.0));
@@ -112,6 +116,7 @@ public class EventProvider extends ContentProvider {
                 );
                 break;
             }
+
             // "event/*"
             case EVENT_ID: {
                 String queryId = EventContract.EventEntry.getIdFromUri(uri);
