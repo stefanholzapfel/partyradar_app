@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import at.fhtw.partyradar.data.EventContract;
@@ -29,7 +30,7 @@ import at.fhtw.partyradar.service.BackgroundLocationService;
 
 import static at.fhtw.partyradar.helper.Utility.*;
 
-public class EventMapFragment extends Fragment implements OnMapReadyCallback {
+public class EventMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     protected static final String LOG_TAG = "EventMapFragment";
 
@@ -104,11 +105,18 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
         });
 
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMarkerClickListener(this);
 
         if (mLastPosition != null) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 13));
         }
 
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        marker.showInfoWindow();
+        return true;
     }
 
     /**
@@ -134,12 +142,14 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback {
                 double event_latitude = cursor.getDouble(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_LATITUDE));
                 double event_longitude = cursor.getDouble(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_LONGITUDE));
                 String event_title = cursor.getString(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_TITLE));
+                String event_location = cursor.getString(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_LOCATION_NAME));
 
                 // TODO: add intents to open event details
 
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(event_latitude, event_longitude))
                         .title(event_title)
+                        .snippet(event_location)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
             }
 
