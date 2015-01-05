@@ -20,5 +20,6 @@
     <string name="content_authority">at.fhtw.partyradar.app</string>
     <string name="token_full_access_label">Full access to all events and locations</string>
     <string name="title_activity_login">Log in</string>
+    <string name="text_wrong_user_password">Wrong username or password</string>
 
 </resources>

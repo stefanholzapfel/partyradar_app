@@ -83,6 +83,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 try {
                     authToken = TokenHelper.getTokenFromService(userName, userPass);
 
+                    if (authToken == null)
+                        data.putString(KEY_ERROR_MESSAGE, getString(R.string.text_wrong_user_password));
+
                     data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
                     data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
                     data.putString(AccountManager.KEY_AUTHTOKEN, authToken);
