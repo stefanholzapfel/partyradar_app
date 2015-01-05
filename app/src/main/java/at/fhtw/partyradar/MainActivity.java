@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import at.fhtw.partyradar.authentication.AccountAuthenticator;
 import at.fhtw.partyradar.authentication.TokenHelper;
 import at.fhtw.partyradar.service.BackgroundLocationService;
 import at.fhtw.partyradar.service.FetchDataService;
@@ -47,24 +46,15 @@ public class MainActivity extends ActionBarActivity {
             protected Void doInBackground(Context... params) {
                 Context context = params[0];
                 try {
-                    AccountAuthenticator authenticator = new AccountAuthenticator(context);
                     AccountManager accountManager = AccountManager.get(context);
-
                     Account[] accounts = accountManager.getAccountsByType(getString(R.string.auth_account_type));
 
                     if (accounts.length == 1) {
                         Account acct = accounts[0];
 
-                        Bundle authTokenBundle = authenticator.getAuthToken(null, acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null);
+                        AccountManagerFuture<Bundle> accountManagerFuture = accountManager.getAuthToken(acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, null, null, null);
+                        Bundle authTokenBundle = accountManagerFuture.getResult();
                         String authToken = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN);
-
-                        // required if invalidation of the token should be done on App start
-                        /*
-                        accountManager.invalidateAuthToken(getString(R.string.auth_account_type), authToken);
-
-                        authTokenBundle = authenticator.getAuthToken(null, acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null);
-                        authToken = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN);
-                        */
 
                         TextView textView_token = (TextView) findViewById(R.id.main_token);
                         textView_token.setText(authToken);

@@ -124,6 +124,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
             mAccountManager.addAccountExplicitly(account, accountPassword, null);
             mAccountManager.setAuthToken(account, authTokenType, authToken);
+
         } else {
             Log.d(LOG_TAG, "finishLogin: setPassword");
             mAccountManager.setPassword(account, accountPassword);

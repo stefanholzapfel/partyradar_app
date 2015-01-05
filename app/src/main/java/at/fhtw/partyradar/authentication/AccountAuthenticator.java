@@ -56,7 +56,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         String authToken = accountManager.peekAuthToken(account, authTokenType);
 
         if (TextUtils.isEmpty(authToken)) {
-            final String password = accountManager.getPassword(account);
+            String password = accountManager.getPassword(account);
+
             if (password != null) {
                 try {
                     Log.d(LOG_TAG, "re-authenticating with the existing password");
@@ -69,7 +70,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         }
 
         if (!TextUtils.isEmpty(authToken)) {
-            final Bundle result = new Bundle();
+            Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, authToken);

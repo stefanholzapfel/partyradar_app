@@ -18,7 +18,7 @@ public class AuthenticatorService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.v(LOG_TAG, "Binding the service");
+        Log.d(LOG_TAG, "Binding the service");
         return mAuthenticator.getIBinder();
     }
 
