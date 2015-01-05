@@ -159,7 +159,7 @@ public class FetchDataService extends IntentService {
             JSONObject eventsJson = new JSONObject(eventsJsonStr);
             JSONArray eventsArray = eventsJson.getJSONArray(EVENTS_ARRAY);
 
-            Vector<ContentValues> cVVector = new Vector<ContentValues>(eventsArray.length());
+            Vector<ContentValues> cVVector = new Vector<>(eventsArray.length());
 
             for(int i = 0; i < eventsArray.length(); i++) {
 

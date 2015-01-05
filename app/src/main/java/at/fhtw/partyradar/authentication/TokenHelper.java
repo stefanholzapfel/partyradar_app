@@ -4,17 +4,14 @@ import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +32,7 @@ public class TokenHelper {
         HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/Token");
 
         try {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
             nameValuePairs.add(new BasicNameValuePair("grant_type", "password"));
             nameValuePairs.add(new BasicNameValuePair("username", userName));
@@ -47,22 +44,14 @@ public class TokenHelper {
 
             HttpResponse response = httpClient.execute(httpPost);
 
-            // TODO: handling wrong user / pass
-
             if (response.getStatusLine().getStatusCode() != 200) return null;
 
             String responseStr = EntityUtils.toString(response.getEntity());
             JSONObject tokenJson = new JSONObject(responseStr);
 
-            if (tokenJson != null) return tokenJson.getString("access_token");
+            return tokenJson.getString("access_token");
 
-        } catch (ClientProtocolException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
 
