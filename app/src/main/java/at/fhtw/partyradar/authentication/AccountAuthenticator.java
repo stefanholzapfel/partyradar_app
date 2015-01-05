@@ -22,7 +22,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     private final Context mContext;
 
     public final static String ACCOUNT_TYPE = "ACCOUNT_TYPE";
-    public final static String AUTH_TYPE = "AUTH_TYPE";
+    public final static String AUTHORIZATION_TYPE = "AUTH_TYPE";
     public final static String ACCOUNT_NAME = "ACCOUNT_NAME";
     public final static String IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
 
@@ -38,7 +38,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         Intent intent = new Intent(mContext, LoginActivity.class);
 
         intent.putExtra(ACCOUNT_TYPE, accountType);
-        intent.putExtra(AUTH_TYPE, authTokenType);
+        intent.putExtra(AUTHORIZATION_TYPE, authTokenType);
         intent.putExtra(IS_ADDING_NEW_ACCOUNT, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
@@ -49,6 +49,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
+
         Log.d(LOG_TAG, "getAuthToken");
 
         AccountManager accountManager = AccountManager.get(mContext);
@@ -59,7 +60,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             if (password != null) {
                 try {
                     Log.d(LOG_TAG, "re-authenticating with the existing password");
-                    authToken = TokenHelper.getToken(account.name, password);
+                    authToken = TokenHelper.getTokenFromService(account.name, password);
 
                 } catch (Exception e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
@@ -78,7 +79,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(ACCOUNT_TYPE, account.type);
-        intent.putExtra(AUTH_TYPE, authTokenType);
+        intent.putExtra(AUTHORIZATION_TYPE, authTokenType);
         intent.putExtra(ACCOUNT_NAME, account.name);
 
         Bundle result = new Bundle();

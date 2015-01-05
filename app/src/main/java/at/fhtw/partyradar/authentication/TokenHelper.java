@@ -24,7 +24,13 @@ public class TokenHelper {
 
     public static final String TOKEN_TYPE_FULL_ACCESS = "Full access";
 
-    public static String getToken(String userName, String password) {
+    /**
+     * gets a new token from the service API for the given username and password
+     * @param userName username of the account
+     * @param password password of the account
+     * @return token
+     */
+    public static String getTokenFromService(String userName, String password) {
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/Token");
 
@@ -40,6 +46,8 @@ public class TokenHelper {
             httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
             HttpResponse response = httpClient.execute(httpPost);
+
+            // TODO: handling wrong user / pass
 
             if (response.getStatusLine().getStatusCode() != 200) return null;
 

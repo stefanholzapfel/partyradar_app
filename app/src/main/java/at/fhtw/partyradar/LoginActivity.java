@@ -32,7 +32,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         setContentView(R.layout.activity_login);
 
         mAccountManager = AccountManager.get(getBaseContext());
-        mAuthTokenType = getIntent().getStringExtra(AccountAuthenticator.AUTH_TYPE);
+        mAuthTokenType = getIntent().getStringExtra(AccountAuthenticator.AUTHORIZATION_TYPE);
 
         if (mAuthTokenType == null) mAuthTokenType = TokenHelper.TOKEN_TYPE_FULL_ACCESS;
 
@@ -81,7 +81,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 Bundle data = new Bundle();
 
                 try {
-                    authToken = TokenHelper.getToken(userName, userPass);
+                    authToken = TokenHelper.getTokenFromService(userName, userPass);
 
                     data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
                     data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);

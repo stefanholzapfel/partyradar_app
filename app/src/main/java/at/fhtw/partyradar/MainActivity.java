@@ -8,6 +8,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import at.fhtw.partyradar.authentication.AccountAuthenticator;
 import at.fhtw.partyradar.authentication.TokenHelper;
 import at.fhtw.partyradar.service.BackgroundLocationService;
 import at.fhtw.partyradar.service.FetchDataService;
@@ -40,21 +42,42 @@ public class MainActivity extends ActionBarActivity {
 
         mLocationServiceIntent = new Intent(this, BackgroundLocationService.class);
 
-        try {
-            AccountManager mgr = AccountManager.get(this);
-            Account[] accounts = mgr.getAccountsByType(getString(R.string.auth_account_type));
-            Account acct = accounts[0];
+        new AsyncTask<Context, Void, Void>() {
+            @Override
+            protected Void doInBackground(Context... params) {
+                Context context = params[0];
+                try {
+                    AccountAuthenticator authenticator = new AccountAuthenticator(context);
+                    AccountManager accountManager = AccountManager.get(context);
 
-            AccountManagerFuture<Bundle> accountManagerFuture = mgr.getAuthToken(acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, this, null, null);
-            Bundle authTokenBundle = accountManagerFuture.getResult();
-            String authToken = authTokenBundle.get(AccountManager.KEY_AUTHTOKEN).toString();
+                    Account[] accounts = accountManager.getAccountsByType(getString(R.string.auth_account_type));
 
-            TextView textView_token = (TextView) findViewById(R.id.main_token);
-            textView_token.setText(authToken);
+                    if (accounts.length == 1) {
+                        Account acct = accounts[0];
 
-        } catch (Exception e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-        }
+                        Bundle authTokenBundle = authenticator.getAuthToken(null, acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null);
+                        String authToken = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN);
+
+                        // required if invalidation of the token should be done on App start
+                        /*
+                        accountManager.invalidateAuthToken(getString(R.string.auth_account_type), authToken);
+
+                        authTokenBundle = authenticator.getAuthToken(null, acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null);
+                        authToken = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN);
+                        */
+
+                        TextView textView_token = (TextView) findViewById(R.id.main_token);
+                        textView_token.setText(authToken);
+                    }
+
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
+                }
+
+                return null;
+            }
+        }.execute(this);
+
     }
 
     @Override
@@ -123,15 +146,19 @@ public class MainActivity extends ActionBarActivity {
 
     public void showLoginForm(View view) {
         try {
-            AccountManager mgr = AccountManager.get(this);
-            mgr.getAuthTokenByFeatures(getString(R.string.auth_account_type), TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, this, null, null, new AccountManagerCallback<Bundle>() {
+            Log.d(LOG_TAG, "showLoginForm");
+
+            AccountManager accountManager = AccountManager.get(this);
+            accountManager.getAuthTokenByFeatures(getString(R.string.auth_account_type), TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, this, null, null, new AccountManagerCallback<Bundle>() {
                 @Override
                 public void run(AccountManagerFuture<Bundle> future) {
                     Bundle bundle;
 
                     try {
+                        Log.d(LOG_TAG, "getting Token from getAuthTokenByFeatures");
+
                         bundle = future.getResult();
-                        final String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+                        String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 
                         TextView textView_token = (TextView) findViewById(R.id.main_token);
                         textView_token.setText(authToken);
@@ -141,7 +168,7 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
             }
-            , null);
+                    , null);
 
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage(), e);
