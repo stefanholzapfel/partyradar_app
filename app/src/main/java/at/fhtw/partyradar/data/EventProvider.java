@@ -91,9 +91,9 @@ public class EventProvider extends ContentProvider {
                 extendedProjection[extendedProjection.length - 1] = "( " + coslat + " * coslat * (coslng * " + coslng + " + sinlng * " + sinlng + ") + " + sinlat + " * sinlat) AS " + EventContract.EventEntry.COLUMN_DISTANCE;
 
                 // extending the selection of the query by filtering for the distance
-                String extendedSelection = null;
-                if (selection != null) extendedSelection += " AND distance > " + Double.toString(Math.cos(radius / 6371.0));
-                else extendedSelection = "distance > " + Double.toString(Math.cos(radius / 6371.0));
+                String extendedSelection = "";
+                if (selection != null) extendedSelection = selection + " AND ";
+                extendedSelection += "distance > " + Double.toString(Math.cos(radius / 6371.0));
 
                 /*
                 retCursor = mOpenHelper.getReadableDatabase()
