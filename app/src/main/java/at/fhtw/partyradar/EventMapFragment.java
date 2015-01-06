@@ -5,24 +5,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.helper.Utility;
@@ -30,15 +40,23 @@ import at.fhtw.partyradar.service.BackgroundLocationService;
 
 import static at.fhtw.partyradar.helper.Utility.*;
 
-public class EventMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class EventMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     protected static final String LOG_TAG = "EventMapFragment";
 
     private GoogleMap mMap;
+    private CheckBox mCheckBox_showHeatMap;
+    //private HeatmapTileProvider mHeatMapTileProvider;
+    //private TileOverlay mTileOverlay;
+
     private LatLng mLastPosition;
-    private LatLng mMapCenter;
+    //private LatLng mMapCenter;
+    //private double mVisibleRadius;
 
     private BroadcastReceiver mReceiver;
+    private Cursor mEventData;
+
+    private static final int EVENT_LOADER = 1;
 
     // Definition of the database's columns used by the loader
     private static final String[] EVENT_COLUMNS = {
@@ -50,7 +68,9 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             EventContract.EventEntry.COLUMN_ADDRESS_ADDITIONS,
             EventContract.EventEntry.COLUMN_CITY,
             EventContract.EventEntry.COLUMN_LATITUDE,
-            EventContract.EventEntry.COLUMN_LONGITUDE
+            EventContract.EventEntry.COLUMN_LONGITUDE,
+            EventContract.EventEntry.COLUMN_MAX_ATTENDS,
+            EventContract.EventEntry.COLUMN_ATTENDEECOUNT
     };
 
     public EventMapFragment() {
@@ -82,6 +102,15 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         View rootView = inflater.inflate(R.layout.fragment_eventmap, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment)(getChildFragmentManager().findFragmentById(R.id.mapFragment));
 
+        mCheckBox_showHeatMap = (CheckBox) rootView.findViewById(R.id.check_showHeatMap);
+        mCheckBox_showHeatMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                drawMapContent();
+            }
+        });
+
         mapFragment.getMapAsync(this);
 
         return rootView;
@@ -96,21 +125,28 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
     public void onMapReady(GoogleMap map) {
         mMap = map;
 
+        /*
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                mMapCenter = mMap.getCameraPosition().target;
-                showEvents(mMapCenter, calculateRadius());
+                //mMapCenter = mMap.getCameraPosition().target;
+                //mVisibleRadius = calculateRadius();
+                //showEvents();
             }
         });
+        */
 
         mMap.setMyLocationEnabled(true);
         mMap.setOnMarkerClickListener(this);
 
+        // TODO: activate before release
+        //mMap.getUiSettings().setZoomControlsEnabled(true);
+
         if (mLastPosition != null) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 13));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 12));
         }
 
+        getLoaderManager().initLoader(EVENT_LOADER, null, this);
     }
 
     @Override
@@ -119,42 +155,46 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         return true;
     }
 
-    /**
-     * shows the Events as marker on the map
-     * @param center center of area
-     * @param radius radius of area
-     */
-    private void showEvents(LatLng center, double radius) {
-        Log.d(LOG_TAG, "Center = Lat:" + center.latitude + " Lng:" + center.longitude + " Radius: " + radius);
-        if (mMap != null) {
+    private void drawMapContent() {
+        if (mEventData == null || mEventData.getCount() == 0) return;
 
-            mMap.clear();
+        mMap.clear();
+        List<WeightedLatLng> eventsForHeatMap = new LinkedList<>();
 
-            Cursor cursor = getActivity().getContentResolver().query(
-                    EventContract.EventEntry.buildEventWithinArea(center.latitude, center.longitude, radius),
-                    EVENT_COLUMNS, // columns to return
-                    null, // cols for "where" clause
-                    null, // values for "where" clause
-                    null  // sort order
-            );
+        mEventData.moveToFirst();
+        do {
+            double event_latitude = mEventData.getDouble(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_LATITUDE));
+            double event_longitude = mEventData.getDouble(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_LONGITUDE));
+            String event_title = mEventData.getString(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_TITLE));
+            String event_locationName = mEventData.getString(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_LOCATION_NAME));
+            int event_maxAttends = mEventData.getInt(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_MAX_ATTENDS));
+            int event_attendeeCount = mEventData.getInt(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_ATTENDEECOUNT));
 
-            while (cursor.moveToNext()) {
-                double event_latitude = cursor.getDouble(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_LATITUDE));
-                double event_longitude = cursor.getDouble(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_LONGITUDE));
-                String event_title = cursor.getString(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_TITLE));
-                String event_location = cursor.getString(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_LOCATION_NAME));
+            // TODO: add intents to open event details
 
-                // TODO: add intents to open event details
-
+            if (mCheckBox_showHeatMap.isChecked()) {
+                // TODO: calculate correct ratio
+                double attendeeRatio = event_maxAttends / 100; //event_attendeeCount / event_maxAttends;
+                eventsForHeatMap.add(new WeightedLatLng(new LatLng(event_latitude, event_longitude), attendeeRatio));
+            }
+            else {
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(event_latitude, event_longitude))
                         .title(event_title)
-                        .snippet(event_location)
+                        .snippet(event_locationName)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
             }
+        } while (mEventData.moveToNext());
 
-            cursor.close();
+        if (mCheckBox_showHeatMap.isChecked() && eventsForHeatMap.size() > 0) {
+            HeatmapTileProvider heatMapTileProvider = new HeatmapTileProvider.Builder()
+                    .weightedData(eventsForHeatMap)
+                    .radius(50)
+                    .build();
+            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(heatMapTileProvider));
         }
+
+
     }
 
     /**
@@ -172,4 +212,33 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             return 0;
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        //Log.d(LOG_TAG, "onCreateLoader");
+        //Log.d(LOG_TAG, "Center = Lat:" + mMapCenter.latitude + " Lng:" + mMapCenter.longitude + " Radius: " + mVisibleRadius);
+
+        //Uri weatherForLocationUri = EventContract.EventEntry.buildEventWithinArea(mMapCenter.latitude, mMapCenter.longitude, mVisibleRadius);
+        Uri weatherForLocationUri = EventContract.EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range)));
+
+        return new CursorLoader(
+                getActivity(),
+                weatherForLocationUri,
+                EVENT_COLUMNS,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        //Log.d(LOG_TAG, "onLoadFinished");
+        mEventData = data;
+        drawMapContent();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        //Log.d(LOG_TAG, "onLoaderReset");
+    }
 }
