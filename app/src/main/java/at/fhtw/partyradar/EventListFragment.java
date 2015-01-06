@@ -183,11 +183,4 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         cursor.close();
         */
     }
-
-    // Move to activity, because manual reload happens there?
-    private void reloadEvents() {
-        // triggers a data sync
-        Intent sendIntent = new Intent(getActivity(), FetchDataService.class);
-        getActivity().startService(sendIntent);
-    }
 }
