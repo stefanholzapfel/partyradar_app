@@ -74,22 +74,23 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         new AsyncTask<String, Void, Intent>() {
             @Override
             protected Intent doInBackground(String... params) {
-
                 Log.d(LOG_TAG, "started authenticating");
 
                 String authToken;
                 Bundle data = new Bundle();
 
                 try {
-                    authToken = TokenHelper.getTokenFromService(userName, userPass);
+                    authToken = TokenHelper.requestTokenFromService(userName, userPass);
 
                     if (authToken == null)
+                        // something went wrong, possibly because of wrong user / pass
                         data.putString(KEY_ERROR_MESSAGE, getString(R.string.text_wrong_user_password));
 
+                    // preparing data for later processing
                     data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
+                    data.putString(PARAM_USER_PASS, userPass);
                     data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
                     data.putString(AccountManager.KEY_AUTHTOKEN, authToken);
-                    data.putString(PARAM_USER_PASS, userPass);
 
                 } catch (Exception e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
@@ -103,8 +104,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             @Override
             protected void onPostExecute(Intent intent) {
                 if (intent.hasExtra(KEY_ERROR_MESSAGE)) {
+                    // something went wrong, show error
                     Toast.makeText(getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
                 } else {
+                    // everything fine, let's log-in
                     finishLogin(intent);
                 }
             }
@@ -125,6 +128,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             String authToken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
             String authTokenType = mAuthTokenType;
 
+            // create new account, and then store the token
             mAccountManager.addAccountExplicitly(account, accountPassword, null);
             mAccountManager.setAuthToken(account, authTokenType, authToken);
 
@@ -133,6 +137,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             mAccountManager.setPassword(account, accountPassword);
         }
 
+        // settling and finishing
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
 

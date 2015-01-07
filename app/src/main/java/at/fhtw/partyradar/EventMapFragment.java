@@ -94,6 +94,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
 
+        // get the latest known position
         mLastPosition = Utility.getPositionFromStorage(getActivity());
     }
 
@@ -142,10 +143,12 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         // TODO: activate before release
         //mMap.getUiSettings().setZoomControlsEnabled(true);
 
+        // centering the map to the latest known position
         if (mLastPosition != null) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 12));
         }
 
+        // initiate retrieving the events data
         getLoaderManager().initLoader(EVENT_LOADER, null, this);
     }
 
@@ -155,12 +158,17 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         return true;
     }
 
+    /**
+     * clearing the map and drawing its content (events / heat map)
+     */
     private void drawMapContent() {
+        // no data, no drawing
         if (mEventData == null || mEventData.getCount() == 0) return;
 
         mMap.clear();
         List<WeightedLatLng> eventsForHeatMap = new LinkedList<>();
 
+        // required, because the cursor is re-run several times and we need to get to the first position
         mEventData.moveToFirst();
         do {
             double event_latitude = mEventData.getDouble(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_LATITUDE));
@@ -172,11 +180,13 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
 
             // TODO: add intents to open event details
 
+            // building data for the heat map
             if (mCheckBox_showHeatMap.isChecked()) {
                 // TODO: calculate correct ratio
                 double attendeeRatio = event_maxAttends / 100; //event_attendeeCount / event_maxAttends;
                 eventsForHeatMap.add(new WeightedLatLng(new LatLng(event_latitude, event_longitude), attendeeRatio));
             }
+            // drawing the markers
             else {
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(event_latitude, event_longitude))
@@ -186,6 +196,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             }
         } while (mEventData.moveToNext());
 
+        // drawing the heat map
         if (mCheckBox_showHeatMap.isChecked() && eventsForHeatMap.size() > 0) {
             HeatmapTileProvider heatMapTileProvider = new HeatmapTileProvider.Builder()
                     .weightedData(eventsForHeatMap)

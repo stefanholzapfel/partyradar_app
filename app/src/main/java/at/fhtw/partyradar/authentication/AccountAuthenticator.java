@@ -49,19 +49,20 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-
         Log.d(LOG_TAG, "getAuthToken");
 
+        // getting cached token from Account Manager
         AccountManager accountManager = AccountManager.get(mContext);
         String authToken = accountManager.peekAuthToken(account, authTokenType);
 
         if (TextUtils.isEmpty(authToken)) {
-            String password = accountManager.getPassword(account);
+            // no token available or it got invalidated, we need to request a new one
 
+            String password = accountManager.getPassword(account);
             if (password != null) {
                 try {
                     Log.d(LOG_TAG, "re-authenticating with the existing password");
-                    authToken = TokenHelper.getTokenFromService(account.name, password);
+                    authToken = TokenHelper.requestTokenFromService(account.name, password);
 
                 } catch (Exception e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
@@ -70,6 +71,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         }
 
         if (!TextUtils.isEmpty(authToken)) {
+            // we have a valid token, so it can be returned it as bundle
             Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
@@ -77,6 +79,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             return result;
         }
 
+        // no token available (because there is no account, or wrong password, or whatever),
+        // so we tell the caller to open the Login
         Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(ACCOUNT_TYPE, account.type);
