@@ -1,6 +1,5 @@
 package at.fhtw.partyradar;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
@@ -44,25 +43,20 @@ public class MainActivity extends ActionBarActivity {
         new AsyncTask<Context, Void, Void>() {
             @Override
             protected Void doInBackground(Context... params) {
+                if (params == null) return null;
+
                 Context context = params[0];
-                try {
-                    AccountManager accountManager = AccountManager.get(context);
-                    Account[] accounts = accountManager.getAccountsByType(getString(R.string.auth_account_type));
+                final String authToken = TokenHelper.getToken(context, true);
+                if (authToken == null) return null;
 
-                    if (accounts.length == 1) {
-                        Account acct = accounts[0];
-
-                        AccountManagerFuture<Bundle> accountManagerFuture = accountManager.getAuthToken(acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, null, null, null);
-                        Bundle authTokenBundle = accountManagerFuture.getResult();
-                        String authToken = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN);
-
+                // required, since the token is showed on the UI
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
                         TextView textView_token = (TextView) findViewById(R.id.main_token);
                         textView_token.setText(authToken);
                     }
-
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
-                }
+                });
 
                 return null;
             }
@@ -145,6 +139,8 @@ public class MainActivity extends ActionBarActivity {
         try {
             Log.d(LOG_TAG, "showLoginForm");
 
+            // using getAuthTokenByFeatures for logging in:
+            // if there is already an account it is returning the token, or it is running through the login / account-creation process
             AccountManager accountManager = AccountManager.get(this);
             accountManager.getAuthTokenByFeatures(getString(R.string.auth_account_type), TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, this, null, null, new AccountManagerCallback<Bundle>() {
                 @Override
