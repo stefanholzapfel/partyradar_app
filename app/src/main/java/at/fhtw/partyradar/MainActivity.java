@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -109,6 +110,13 @@ public class MainActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == R.id.action_select_event) {
+            DialogFragment newFragment = new SelectEventFragment();
+            newFragment.show(getSupportFragmentManager(), "select_event");
+
+            return true;
+        }
 
         if (id == R.id.action_refresh) {
             Intent sendIntent = new Intent(this, FetchDataService.class);
