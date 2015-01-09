@@ -42,7 +42,7 @@ public class EventListAdapter extends CursorAdapter {
         // Read distance for small text view from cursor
         Double distance = Utility.rad2meter(cursor.getDouble(EventListFragment.COL_DISTANCE));
         // Build string for small text view
-        String smallTextViewContent = locationName + " - " + address + " " + addressAdditions + " " + city + "  - Distance: " + Utility.round(distance / 1000, 2) + " km";
+        String smallTextViewContent = locationName + " - " + address + " " + addressAdditions + " " + city + "  - Distance: " + Utility.getFriendlyDistance(distance);
 
         viewHolder.largeTextView.setText(largeTextViewContent);
         viewHolder.smallTextView.setText(smallTextViewContent);

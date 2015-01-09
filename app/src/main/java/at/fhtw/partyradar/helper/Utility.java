@@ -101,6 +101,18 @@ public class Utility {
     }
 
     /**
+     * returns a user friendly string of the distance (like "123 m")
+     */
+    public static String getFriendlyDistance(double meter) {
+        if (meter < 1000) {
+            return Integer.toString((int)meter) + " m";
+        }
+        else {
+            return Double.toString(round(meter / 1000, 2)) + " km";
+        }
+    }
+
+    /**
      * rounds a double
      */
     public static double round(double value, int places) {
