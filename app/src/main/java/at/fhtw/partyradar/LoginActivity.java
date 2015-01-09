@@ -107,7 +107,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                     // something went wrong, show error
                     Toast.makeText(getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
                 } else {
-                    // everything fine, let's log-in
+                    // everything fine, let's log-in (create account)
                     finishLogin(intent);
                 }
             }

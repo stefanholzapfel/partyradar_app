@@ -9,6 +9,8 @@
     <string name="action_select_event">Attend party</string>
     <string name="title_select_event">Where to log in?</string>
     <string name="action_cancel">Cancel</string>
+    <string name="attend_success">Logged in successfully</string>
+    <string name="attend_failed">Login to event failed</string>
 
     <!-- Preference keys for the last known location -->
     <string name="pref_last_location_lat" translatable="false">last_location_lat</string>
@@ -18,8 +20,11 @@
     <string name="default_location_lat" translatable="false">48.208701</string>
     <string name="default_location_lng" translatable="false">16.372409</string>
 
-    <!-- Max. range for requesting events in an area (in meters) -->
+    <!-- Max. range for requesting events (in meters) -->
     <string name="events_max_range" translatable="false">50000</string>
+
+    <!-- Max. range for attending an event (in meters) -->
+    <string name="attend_max_range" translatable="false">1000</string>
 
     <!-- for authenticator -->
     <string name="auth_account_type">partyradar.fhtw.at</string>
