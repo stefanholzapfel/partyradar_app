@@ -2,7 +2,6 @@ package at.fhtw.partyradar;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,11 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 

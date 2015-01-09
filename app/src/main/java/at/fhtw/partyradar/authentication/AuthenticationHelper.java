@@ -30,6 +30,7 @@ public class AuthenticationHelper {
 
     /**
      * requests a new token from the service API for the given username and password
+     * (this must not run in the main / UI thread)
      * @param userName username of the account
      * @param password password of the account
      * @return token
@@ -106,11 +107,17 @@ public class AuthenticationHelper {
         return null;
     }
 
-    public static boolean logInEvent(String eventID, String authToken) {
-        if (eventID == null || authToken == null) return false;
+    /**
+     * logs the user into an event
+     * (this must not run in the main / UI thread)
+     * @param eventId id of the event
+     * @param authToken authentication token of the user
+     */
+    public static boolean logInEvent(String eventId, String authToken) {
+        if (eventId == null || authToken == null) return false;
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/api/App/LoginEvent?eventId=" + eventID);
+        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/api/App/LoginEvent?eventId=" + eventId);
 
         try {
             httpPost.setHeader("Authorization", "Bearer " + authToken);
@@ -124,5 +131,23 @@ public class AuthenticationHelper {
         }
 
         return false;
+    }
+
+    /**
+     * returns the (user)name of the account
+     * @param context context of the app
+     */
+    public static String getUsername(Context context) {
+        if (context == null) return null;
+
+        AccountManager accountManager = AccountManager.get(context);
+        Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.auth_account_type));
+
+        if (accounts.length == 1) {
+            Account acct = accounts[0];
+            return acct.name;
+        }
+
+        return null;
     }
 }

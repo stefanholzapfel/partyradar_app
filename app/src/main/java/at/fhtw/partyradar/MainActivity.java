@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import at.fhtw.partyradar.authentication.AuthenticationHelper;
@@ -144,11 +145,7 @@ public class MainActivity extends ActionBarActivity {
                         String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 
                         if (authToken != null) {
-                            TextView textView_token = (TextView) findViewById(R.id.main_token);
-                            textView_token.setText(authToken);
-
-                            MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
-                            item_attend.setVisible(true);
+                            switchToLoggedIn();
                         }
 
                     } catch (Exception e) {
@@ -178,18 +175,25 @@ public class MainActivity extends ActionBarActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        TextView textView_token = (TextView) findViewById(R.id.main_token);
-                        textView_token.setText(authToken);
-
-                        if (mMenu != null) {
-                            MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
-                            item_attend.setVisible(true);
-                        }
+                        switchToLoggedIn();
                     }
                 });
 
                 return null;
             }
         }.execute(this);
+    }
+
+    private void switchToLoggedIn() {
+        Button loginButton = (Button) findViewById(R.id.main_btn_login);
+        loginButton.setVisibility(View.INVISIBLE);
+
+        TextView text_username = (TextView) findViewById(R.id.main_username);
+        text_username.setText(AuthenticationHelper.getUsername(this));
+
+        if (mMenu != null) {
+            MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
+            item_attend.setVisible(true);
+        }
     }
 }

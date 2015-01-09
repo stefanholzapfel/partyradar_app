@@ -218,8 +218,6 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
                     .build();
             mMap.addTileOverlay(new TileOverlayOptions().tileProvider(heatMapTileProvider));
         }
-
-
     }
 
     /**
