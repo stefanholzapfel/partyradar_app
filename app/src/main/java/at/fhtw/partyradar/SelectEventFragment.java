@@ -2,6 +2,7 @@ package at.fhtw.partyradar;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -78,13 +80,23 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
         final String authToken = AuthenticationHelper.getToken(getActivity(), false);
         //Log.d(LOG_TAG, "Selected title: " + mCursor.getString(COL_TITLE));
 
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncTask<Context, Void, Boolean>() {
+            Context mContext;
+
             @Override
-            protected Void doInBackground(Void... params) {
-                AuthenticationHelper.logInEvent(eventId, authToken);
-                return null;
+            protected Boolean doInBackground(Context... params) {
+                mContext = params[0];
+                return AuthenticationHelper.logInEvent(eventId, authToken);
             }
-        }.execute();
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (success)
+                    Toast.makeText(mContext, "Successfully logged in", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(mContext, "Login to event failed", Toast.LENGTH_SHORT).show();
+            }
+        }.execute(getActivity());
     }
 
     @Override

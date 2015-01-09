@@ -124,7 +124,7 @@ public class AuthenticationHelper {
 
             HttpResponse response = httpClient.execute(httpPost);
 
-            if (response.getStatusLine().getStatusCode() != 200) return true;
+            if (response.getStatusLine().getStatusCode() == 200) return true;
 
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage(), e);
