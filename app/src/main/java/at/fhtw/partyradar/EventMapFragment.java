@@ -73,6 +73,20 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             EventContract.EventEntry.COLUMN_ATTENDEECOUNT
     };
 
+    // Indices tied to the EVENT_COLUMNS. If EVENT_COLUMNS changes, these have to be adapted.
+    public static final int COL_ID = 0;
+    public static final int COL_EVENT_ID = 1;
+    public static final int COL_TITLE = 2;
+    public static final int COL_LOCATION_NAME = 3;
+    public static final int COL_ADDRESS = 4;
+    public static final int COL_ADDRESS_ADDITIONS = 5;
+    public static final int COL_CITY = 6;
+    public static final int COL_LATITUDE = 7;
+    public static final int COL_LONGITUDE = 8;
+    public static final int COL_MAX_ATTENDS = 9;
+    public static final int COL_ATTENDEECOUNT = 10;
+
+
     public EventMapFragment() {
         // Required empty public constructor
     }
@@ -171,12 +185,12 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         // required, because the cursor is re-run several times and we need to get to the first position
         mEventData.moveToFirst();
         do {
-            double event_latitude = mEventData.getDouble(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_LATITUDE));
-            double event_longitude = mEventData.getDouble(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_LONGITUDE));
-            String event_title = mEventData.getString(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_TITLE));
-            String event_locationName = mEventData.getString(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_LOCATION_NAME));
-            int event_maxAttends = mEventData.getInt(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_MAX_ATTENDS));
-            int event_attendeeCount = mEventData.getInt(mEventData.getColumnIndex(EventContract.EventEntry.COLUMN_ATTENDEECOUNT));
+            double event_latitude = mEventData.getDouble(COL_LATITUDE);
+            double event_longitude = mEventData.getDouble(COL_LONGITUDE);
+            String event_title = mEventData.getString(COL_TITLE);
+            String event_locationName = mEventData.getString(COL_LOCATION_NAME);
+            int event_maxAttends = mEventData.getInt(COL_MAX_ATTENDS);
+            int event_attendeeCount = mEventData.getInt(COL_ATTENDEECOUNT);
 
             // TODO: add intents to open event details
 
