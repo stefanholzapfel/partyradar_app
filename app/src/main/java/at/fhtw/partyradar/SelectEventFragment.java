@@ -10,19 +10,24 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.widget.Adapter;
-import android.widget.ListAdapter;
+import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.helper.Utility;
 
-public class SelectEventFragment extends DialogFragment implements  LoaderManager.LoaderCallbacks<Cursor> {
+public class SelectEventFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int EVENT_LOADER = 1;
+    protected static final String LOG_TAG = SelectEventFragment.class.getSimpleName();
+
     private LatLng mLastPosition;
+    private static final int EVENT_LOADER = 1;
+
     private SelectEventAdapter mSelectEventAdapter;
+    private Cursor mCursor;
 
     // Definition of the database's columns used by the loader
     private static final String[] EVENT_COLUMNS = {
@@ -40,18 +45,19 @@ public class SelectEventFragment extends DialogFragment implements  LoaderManage
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        //Log.d(LOG_TAG, "onCreateDialog");
+        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_selectevent, null);
+
         // get the latest known position
         mLastPosition = Utility.getPositionFromStorage(getActivity());
         mSelectEventAdapter = new SelectEventAdapter(getActivity(), null, 0);
 
-        // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         builder.setTitle(R.string.title_select_event)
+                .setView(view)
                 .setAdapter(mSelectEventAdapter, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
+                        attendEvent(which);
                     }
                 });
 
@@ -63,13 +69,16 @@ public class SelectEventFragment extends DialogFragment implements  LoaderManage
 
         getLoaderManager().initLoader(EVENT_LOADER, null, this);
 
-        // Create the AlertDialog object and return it
         return builder.create();
+    }
+
+    private void attendEvent(int position) {
+        mCursor.moveToPosition(position);
+        Log.d(LOG_TAG, "Selected title: " + mCursor.getString(COL_TITLE));
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        //Uri weatherForLocationUri = EventContract.EventEntry.buildEventWithinArea(mMapCenter.latitude, mMapCenter.longitude, mVisibleRadius);
         Uri weatherForLocationUri = EventContract.EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range)));
 
         return new CursorLoader(
@@ -85,6 +94,7 @@ public class SelectEventFragment extends DialogFragment implements  LoaderManage
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         //Log.d(LOG_TAG, "onLoadFinished");
+        mCursor = data;
         mSelectEventAdapter.swapCursor(data);
     }
 

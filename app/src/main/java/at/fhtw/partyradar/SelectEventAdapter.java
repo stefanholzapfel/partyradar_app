@@ -16,7 +16,8 @@ public class SelectEventAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.list_item_event_list, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.list_item_select_event, parent, false);
+
         ViewHolder viewHolder = new ViewHolder(view);
         view.setTag(viewHolder);
         return view;
@@ -27,7 +28,7 @@ public class SelectEventAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder)view.getTag();
 
         String eventTitle = cursor.getString(SelectEventFragment.COL_TITLE);
-        //viewHolder.textView.setText(eventTitle);
+        viewHolder.textView.setText(eventTitle);
     }
 
     /**
@@ -37,7 +38,7 @@ public class SelectEventAdapter extends CursorAdapter {
         public final TextView textView;
 
         public ViewHolder(View view) {
-            textView = (TextView) view.findViewById(R.id.list_item_select_event);
+            textView = (TextView) view.findViewById(R.id.list_item_select_event_text);
         }
     }
 

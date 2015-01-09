@@ -41,32 +41,6 @@ public class MainActivity extends ActionBarActivity {
         }
 
         mLocationServiceIntent = new Intent(this, BackgroundLocationService.class);
-
-        new AsyncTask<Context, Void, Void>() {
-            @Override
-            protected Void doInBackground(Context... params) {
-                if (params == null) return null;
-
-                Context context = params[0];
-                final String authToken = TokenHelper.getToken(context, true);
-                if (authToken == null) return null;
-
-                // required, since the token is showed on the UI
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        TextView textView_token = (TextView) findViewById(R.id.main_token);
-                        textView_token.setText(authToken);
-
-                        MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
-                        item_attend.setVisible(true);
-                    }
-                });
-
-                return null;
-            }
-        }.execute(this);
-
     }
 
     @Override
@@ -100,6 +74,8 @@ public class MainActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         mMenu = menu;
+
+        runAutoLogin();
 
         return true;
     }
@@ -184,5 +160,36 @@ public class MainActivity extends ActionBarActivity {
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
+    }
+
+    private void runAutoLogin() {
+        new AsyncTask<Context, Void, Void>() {
+            @Override
+            protected Void doInBackground(Context... params) {
+                if (params == null) return null;
+
+                Context context = params[0];
+
+                // get new token (by invalidating the old one)
+                final String authToken = TokenHelper.getToken(context, true);
+                if (authToken == null) return null;
+
+                // required, since the token is showed on the UI
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView textView_token = (TextView) findViewById(R.id.main_token);
+                        textView_token.setText(authToken);
+
+                        if (mMenu != null) {
+                            MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
+                            item_attend.setVisible(true);
+                        }
+                    }
+                });
+
+                return null;
+            }
+        }.execute(this);
     }
 }
