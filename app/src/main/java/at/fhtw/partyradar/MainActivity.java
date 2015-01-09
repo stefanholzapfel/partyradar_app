@@ -26,6 +26,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Intent mLocationServiceIntent;
     private PendingIntent mDataPendingIntent;
+    private Menu mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,9 @@ public class MainActivity extends ActionBarActivity {
                     public void run() {
                         TextView textView_token = (TextView) findViewById(R.id.main_token);
                         textView_token.setText(authToken);
+
+                        MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
+                        item_attend.setVisible(true);
                     }
                 });
 
@@ -94,6 +98,8 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        mMenu = menu;
+
         return true;
     }
 
@@ -153,15 +159,19 @@ public class MainActivity extends ActionBarActivity {
                         bundle = future.getResult();
                         String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 
-                        TextView textView_token = (TextView) findViewById(R.id.main_token);
-                        textView_token.setText(authToken);
+                        if (authToken != null) {
+                            TextView textView_token = (TextView) findViewById(R.id.main_token);
+                            textView_token.setText(authToken);
+
+                            MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
+                            item_attend.setVisible(true);
+                        }
 
                     } catch (Exception e) {
                         Log.e(LOG_TAG, e.getMessage(), e);
                     }
                 }
-            }
-                    , null);
+            }, null);
 
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage(), e);
