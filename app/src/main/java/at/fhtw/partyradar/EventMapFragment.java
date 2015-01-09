@@ -15,8 +15,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,6 +34,7 @@ import com.google.maps.android.heatmaps.WeightedLatLng;
 import java.util.LinkedList;
 import java.util.List;
 
+import at.fhtw.partyradar.authentication.AuthenticationHelper;
 import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.helper.Utility;
 import at.fhtw.partyradar.service.BackgroundLocationService;
@@ -45,7 +46,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
     protected static final String LOG_TAG = "EventMapFragment";
 
     private GoogleMap mMap;
-    private CheckBox mCheckBox_showHeatMap;
+    private Switch mSwitch_showHeatMap;
     //private HeatmapTileProvider mHeatMapTileProvider;
     //private TileOverlay mTileOverlay;
 
@@ -117,8 +118,8 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         View rootView = inflater.inflate(R.layout.fragment_eventmap, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment)(getChildFragmentManager().findFragmentById(R.id.mapFragment));
 
-        mCheckBox_showHeatMap = (CheckBox) rootView.findViewById(R.id.check_showHeatMap);
-        mCheckBox_showHeatMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        mSwitch_showHeatMap = (Switch) rootView.findViewById(R.id.switch_showHeatMap);
+        mSwitch_showHeatMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -127,6 +128,10 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         });
 
         mapFragment.getMapAsync(this);
+
+        // show the option to switch to the heat map only if logged in
+        if (AuthenticationHelper.getToken(getActivity(), false) != null)
+            mSwitch_showHeatMap.setVisibility(View.VISIBLE);
 
         return rootView;
     }
@@ -195,7 +200,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             // TODO: add intents to open event details
 
             // building data for the heat map
-            if (mCheckBox_showHeatMap.isChecked()) {
+            if (mSwitch_showHeatMap.isChecked()) {
                 // TODO: calculate correct ratio
                 double attendeeRatio = event_maxAttends / 100; //event_attendeeCount / event_maxAttends;
                 eventsForHeatMap.add(new WeightedLatLng(new LatLng(event_latitude, event_longitude), attendeeRatio));
@@ -211,7 +216,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         } while (mEventData.moveToNext());
 
         // drawing the heat map
-        if (mCheckBox_showHeatMap.isChecked() && eventsForHeatMap.size() > 0) {
+        if (mSwitch_showHeatMap.isChecked() && eventsForHeatMap.size() > 0) {
             HeatmapTileProvider heatMapTileProvider = new HeatmapTileProvider.Builder()
                     .weightedData(eventsForHeatMap)
                     .radius(50)

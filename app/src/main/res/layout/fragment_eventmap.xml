@@ -1,20 +1,22 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="at.fhtw.partyradar.EventMapFragment">
+    tools:context="at.fhtw.partyradar.EventMapFragment"
+    android:orientation="vertical">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="5" />
 
-    <CheckBox
+    <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/action_showHeatMap"
-        android:id="@+id/check_showHeatMap"
-        android:layout_gravity="center_horizontal|bottom"/>
+        android:id="@+id/switch_showHeatMap"
+        android:visibility="invisible" />
 
-</FrameLayout>
+</LinearLayout>

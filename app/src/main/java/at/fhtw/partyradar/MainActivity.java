@@ -41,6 +41,7 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
         }
 
+        // define the intent for the background location service (will be started later)
         mLocationServiceIntent = new Intent(this, BackgroundLocationService.class);
     }
 
@@ -55,7 +56,6 @@ public class MainActivity extends ActionBarActivity {
         // set repeating data update task
         Intent alarmIntent = new Intent(this, FetchDataService.AlarmReceiver.class);
         mDataPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 600000, mDataPendingIntent);     // 10 minutes * 60 seconds * 1000 = 600000 milliseconds
     }
@@ -64,8 +64,10 @@ public class MainActivity extends ActionBarActivity {
     protected void onStop() {
         super.onStop();
 
+        // stop the background location service
         stopService(mLocationServiceIntent);
 
+        // stop the repeating data update
         AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(mDataPendingIntent);
     }
