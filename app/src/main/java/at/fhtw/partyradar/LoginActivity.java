@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import at.fhtw.partyradar.authentication.AccountAuthenticator;
-import at.fhtw.partyradar.authentication.TokenHelper;
+import at.fhtw.partyradar.authentication.AuthenticationHelper;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
 
@@ -34,7 +34,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         mAccountManager = AccountManager.get(getBaseContext());
         mAuthTokenType = getIntent().getStringExtra(AccountAuthenticator.AUTHORIZATION_TYPE);
 
-        if (mAuthTokenType == null) mAuthTokenType = TokenHelper.TOKEN_TYPE_FULL_ACCESS;
+        if (mAuthTokenType == null) mAuthTokenType = AuthenticationHelper.TOKEN_TYPE_FULL_ACCESS;
 
         findViewById(R.id.login_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +80,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 Bundle data = new Bundle();
 
                 try {
-                    authToken = TokenHelper.requestTokenFromService(userName, userPass);
+                    authToken = AuthenticationHelper.requestTokenFromService(userName, userPass);
 
                     if (authToken == null)
                         // something went wrong, possibly because of wrong user / pass

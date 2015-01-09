@@ -2,20 +2,25 @@ package at.fhtw.partyradar;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import at.fhtw.partyradar.authentication.AuthenticationHelper;
 import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.helper.Utility;
 
@@ -74,11 +79,22 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
 
     private void attendEvent(int position) {
         mCursor.moveToPosition(position);
-        Log.d(LOG_TAG, "Selected title: " + mCursor.getString(COL_TITLE));
+        final String eventId = mCursor.getString(COL_EVENT_ID);
+        final String authToken = AuthenticationHelper.getToken(getActivity(), false);
+        //Log.d(LOG_TAG, "Selected title: " + mCursor.getString(COL_TITLE));
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                AuthenticationHelper.logInEvent(eventId, authToken);
+                return null;
+            }
+        }.execute();
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // TODO: restrict to events in very near distance
         Uri weatherForLocationUri = EventContract.EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range)));
 
         return new CursorLoader(

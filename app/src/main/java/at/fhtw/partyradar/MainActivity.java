@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import at.fhtw.partyradar.authentication.TokenHelper;
+import at.fhtw.partyradar.authentication.AuthenticationHelper;
 import at.fhtw.partyradar.service.BackgroundLocationService;
 import at.fhtw.partyradar.service.FetchDataService;
 
@@ -132,7 +132,7 @@ public class MainActivity extends ActionBarActivity {
             // using getAuthTokenByFeatures for logging in:
             // if there is already an account it is returning the token, or it is running through the login / account-creation process
             AccountManager accountManager = AccountManager.get(this);
-            accountManager.getAuthTokenByFeatures(getString(R.string.auth_account_type), TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, this, null, null, new AccountManagerCallback<Bundle>() {
+            accountManager.getAuthTokenByFeatures(getString(R.string.auth_account_type), AuthenticationHelper.TOKEN_TYPE_FULL_ACCESS, null, this, null, null, new AccountManagerCallback<Bundle>() {
                 @Override
                 public void run(AccountManagerFuture<Bundle> future) {
                     Bundle bundle;
@@ -171,7 +171,7 @@ public class MainActivity extends ActionBarActivity {
                 Context context = params[0];
 
                 // get new token (by invalidating the old one)
-                final String authToken = TokenHelper.getToken(context, true);
+                final String authToken = AuthenticationHelper.getToken(context, true);
                 if (authToken == null) return null;
 
                 // required, since the token is showed on the UI

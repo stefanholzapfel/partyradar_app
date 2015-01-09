@@ -62,7 +62,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             if (password != null) {
                 try {
                     Log.d(LOG_TAG, "re-authenticating with the existing password");
-                    authToken = TokenHelper.requestTokenFromService(account.name, password);
+                    authToken = AuthenticationHelper.requestTokenFromService(account.name, password);
 
                 } catch (Exception e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
@@ -94,7 +94,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
-        if (TokenHelper.TOKEN_TYPE_FULL_ACCESS.equals(authTokenType))
+        if (AuthenticationHelper.TOKEN_TYPE_FULL_ACCESS.equals(authTokenType))
             return mContext.getString(R.string.token_full_access_label);
         else
             return authTokenType + " (Label)";

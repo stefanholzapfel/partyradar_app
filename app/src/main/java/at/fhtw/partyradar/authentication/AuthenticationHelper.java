@@ -22,9 +22,9 @@ import java.util.List;
 
 import at.fhtw.partyradar.R;
 
-public class TokenHelper {
+public class AuthenticationHelper {
 
-    private static final String LOG_TAG = TokenHelper.class.getSimpleName();
+    private static final String LOG_TAG = AuthenticationHelper.class.getSimpleName();
 
     public static final String TOKEN_TYPE_FULL_ACCESS = "Full access";
 
@@ -85,7 +85,7 @@ public class TokenHelper {
             try {
                 if (invalidate) {
                     // getting token from account manager
-                    accountManagerFuture = accountManager.getAuthToken(acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, null, null, null);
+                    accountManagerFuture = accountManager.getAuthToken(acct, AuthenticationHelper.TOKEN_TYPE_FULL_ACCESS, null, null, null, null);
                     authTokenBundle = accountManagerFuture.getResult();
                     String authToken = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN);
 
@@ -94,7 +94,7 @@ public class TokenHelper {
                 }
 
                 // getting it again (this time it will be a new one requested from the service)
-                accountManagerFuture = accountManager.getAuthToken(acct, TokenHelper.TOKEN_TYPE_FULL_ACCESS, null, null, null, null);
+                accountManagerFuture = accountManager.getAuthToken(acct, AuthenticationHelper.TOKEN_TYPE_FULL_ACCESS, null, null, null, null);
                 authTokenBundle = accountManagerFuture.getResult();
                 return authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN);
 
@@ -104,5 +104,25 @@ public class TokenHelper {
         }
 
         return null;
+    }
+
+    public static boolean logInEvent(String eventID, String authToken) {
+        if (eventID == null || authToken == null) return false;
+
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/api/App/LoginEvent?eventId=" + eventID);
+
+        try {
+            httpPost.setHeader("Authorization", "Bearer " + authToken);
+
+            HttpResponse response = httpClient.execute(httpPost);
+
+            if (response.getStatusLine().getStatusCode() != 200) return true;
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+        }
+
+        return false;
     }
 }

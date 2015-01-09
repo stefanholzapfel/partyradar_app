@@ -35,7 +35,7 @@ public class SelectEventAdapter extends CursorAdapter {
      * Cache of the children views for a event list item.
      */
     public static class ViewHolder {
-        public final TextView textView;
+        public TextView textView;
 
         public ViewHolder(View view) {
             textView = (TextView) view.findViewById(R.id.list_item_select_event_text);
