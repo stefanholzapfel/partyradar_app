@@ -1,5 +1,6 @@
 package at.fhtw.partyradar;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -44,6 +45,26 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
     public static final int COL_EVENT_ID = 1;
     public static final int COL_TITLE = 2;
     public static final int COL_LOCATION_NAME = 3;
+
+    public interface NoticeDialogListener {
+        public void onAttendEventClick(DialogFragment dialog);
+    }
+
+    NoticeDialogListener mListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // Verify that the host activity implements the callback interface
+        try {
+            // Instantiate the NoticeDialogListener so we can send events to the host
+            mListener = (NoticeDialogListener) activity;
+        } catch (ClassCastException e) {
+            // The activity doesn't implement the interface, throw exception
+            throw new ClassCastException(activity.toString() + " must implement NoticeDialogListener");
+        }
+    }
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -91,8 +112,10 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
 
             @Override
             protected void onPostExecute(Boolean success) {
-                if (success)
+                if (success) {
                     Toast.makeText(mContext, mContext.getString(R.string.attend_success), Toast.LENGTH_SHORT).show();
+                    mListener.onAttendEventClick(SelectEventFragment.this);
+                }
                 else
                     Toast.makeText(mContext, mContext.getString(R.string.attend_failed), Toast.LENGTH_SHORT).show();
             }

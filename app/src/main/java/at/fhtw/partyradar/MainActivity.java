@@ -25,7 +25,7 @@ import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.service.BackgroundLocationService;
 import at.fhtw.partyradar.service.FetchDataService;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements SelectEventFragment.NoticeDialogListener {
 
     protected static final String LOG_TAG = "MainActivity";
 
@@ -115,6 +115,12 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onAttendEventClick(DialogFragment dialog) {
+        showLoggedInEvent(this);
+    }
+
 
     // TODO: Remove temporary method
     // TODO: Find a a better way to switch, so fragment is not created anew
@@ -208,6 +214,10 @@ public class MainActivity extends ActionBarActivity {
         showLoggedInEvent(this);
     }
 
+    /**
+     * showing the title of the logged-in event
+     * @param context context of the activity
+     */
     private void showLoggedInEvent(final Context context) {
 
         new AsyncTask<Void, Void, String>() {
