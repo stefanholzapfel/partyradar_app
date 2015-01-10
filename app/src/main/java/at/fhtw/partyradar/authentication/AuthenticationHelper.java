@@ -11,12 +11,14 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,21 +154,26 @@ public class AuthenticationHelper {
 
     /**
      * returns the event-id of the event the user is currently logged-in
+     * (this must not run in the main / UI thread, or an Exception will occur)
      * @param authToken authentication token of the user
      */
     public static String getLoggedInEvent(String authToken) {
         if (authToken == null) return null;
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/api/App/...");
+        HttpGet request = new HttpGet();
 
         try {
-            /*
-            httpPost.setHeader("Authorization", "Bearer " + authToken);
-            HttpResponse response = httpClient.execute(httpPost);
-            */
-            //if (response.getStatusLine().getStatusCode() == 200) return true;
-            return "3451d98b-a3ed-4d86-afad-7efe1ff249c3";
+            request.setURI(new URI("http://wi-gate.technikum-wien.at:60349/api/App/GetUserDetails"));
+            request.setHeader("Authorization", "Bearer " + authToken);
+            HttpResponse response = httpClient.execute(request);
+
+            if (response.getStatusLine().getStatusCode() != 200) return null;
+
+            String responseStr = EntityUtils.toString(response.getEntity());
+            JSONObject tokenJson = new JSONObject(responseStr);
+
+            return tokenJson.getString("AttendEventId");
 
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage(), e);

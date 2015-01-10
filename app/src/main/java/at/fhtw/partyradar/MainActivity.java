@@ -177,11 +177,13 @@ public class MainActivity extends ActionBarActivity {
                 final String authToken = AuthenticationHelper.getToken(context, true);
                 if (authToken == null) return null;
 
+                final String eventId = AuthenticationHelper.getLoggedInEvent(authToken);
+
                 // needs to be run as runOnUiThread, since the token is showed on the UI
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        switchToLoggedInMode(authToken);
+                        switchToLoggedInMode(eventId);
                     }
                 });
 
@@ -192,9 +194,9 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * switching various UI elements to logged-in mode
-     * @param authToken authentication token of the user
+     * @param eventId eventId of the logged-in event
      */
-    private void switchToLoggedInMode(String authToken) {
+    private void switchToLoggedInMode(String eventId) {
         if (mMenu != null) {
             MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
             item_attend.setVisible(true);
@@ -207,7 +209,6 @@ public class MainActivity extends ActionBarActivity {
         text_username.setText(AuthenticationHelper.getUsername(this));
 
         TextView text_loggedEventTitle = (TextView) findViewById(R.id.main_loggedEventTitle);
-        String eventId = AuthenticationHelper.getLoggedInEvent(authToken);
 
         String[] EVENT_COLUMNS = {
                 EventContract.EventEntry._ID,
