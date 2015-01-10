@@ -101,7 +101,7 @@ public class Utility {
     }
 
     /**
-     * returns a user friendly string of the distance (like "123 m")
+     * returns a user friendly string of the distance (like '123 m' or '3.45 km')
      */
     public static String getFriendlyDistance(double meter) {
         if (meter < 1000) {

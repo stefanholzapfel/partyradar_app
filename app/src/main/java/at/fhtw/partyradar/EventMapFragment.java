@@ -43,16 +43,11 @@ import static at.fhtw.partyradar.helper.Utility.*;
 
 public class EventMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    protected static final String LOG_TAG = "EventMapFragment";
+    protected static final String LOG_TAG = EventMapFragment.class.getSimpleName();
 
     private GoogleMap mMap;
     private Switch mSwitch_showHeatMap;
-    //private HeatmapTileProvider mHeatMapTileProvider;
-    //private TileOverlay mTileOverlay;
-
     private LatLng mLastPosition;
-    //private LatLng mMapCenter;
-    //private double mVisibleRadius;
 
     private BroadcastReceiver mReceiver;
     private Cursor mEventData;
@@ -96,6 +91,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // TODO: check if this is actually required in "v1"
         // prepare and register for broadcasts of location updates
         IntentFilter intentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
         mReceiver = new BroadcastReceiver() {
@@ -144,22 +140,10 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
 
     public void onMapReady(GoogleMap map) {
         mMap = map;
-
-        /*
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition position) {
-                //mMapCenter = mMap.getCameraPosition().target;
-                //mVisibleRadius = calculateRadius();
-                //showEvents();
-            }
-        });
-        */
-
         mMap.setMyLocationEnabled(true);
         mMap.setOnMarkerClickListener(this);
 
-        // TODO: activate before release
+        // TODO: activate before release, since the AVD emulator is crashing if this feature is used
         //mMap.getUiSettings().setZoomControlsEnabled(true);
 
         // centering the map to the latest known position
@@ -243,9 +227,6 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         //Log.d(LOG_TAG, "onCreateLoader");
-        //Log.d(LOG_TAG, "Center = Lat:" + mMapCenter.latitude + " Lng:" + mMapCenter.longitude + " Radius: " + mVisibleRadius);
-
-        //Uri weatherForLocationUri = EventContract.EventEntry.buildEventWithinArea(mMapCenter.latitude, mMapCenter.longitude, mVisibleRadius);
         Uri weatherForLocationUri = EventContract.EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range)));
 
         return new CursorLoader(

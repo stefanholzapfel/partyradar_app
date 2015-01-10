@@ -18,7 +18,7 @@ import at.fhtw.partyradar.authentication.AuthenticationHelper;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
 
-    protected static final String LOG_TAG = "LoginActivity";
+    protected static final String LOG_TAG = LoginActivity.class.getSimpleName();
 
     public final static String PARAM_USER_PASS = "USER_PASS";
     public static final String KEY_ERROR_MESSAGE = "ERR_MSG";

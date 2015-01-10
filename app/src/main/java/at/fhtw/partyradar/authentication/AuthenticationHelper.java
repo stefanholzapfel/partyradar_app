@@ -30,7 +30,7 @@ public class AuthenticationHelper {
 
     /**
      * requests a new token from the service API for the given username and password
-     * (this must not run in the main / UI thread)
+     * (this must not run in the main / UI thread, or an Exception will occur)
      * @param userName username of the account
      * @param password password of the account
      * @return token
@@ -109,7 +109,7 @@ public class AuthenticationHelper {
 
     /**
      * logs the user into an event
-     * (this must not run in the main / UI thread)
+     * (this must not run in the main / UI thread, or an Exception will occur)
      * @param eventId id of the event
      * @param authToken authentication token of the user
      */

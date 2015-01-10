@@ -26,7 +26,7 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
     protected static final String LOG_TAG = SelectEventFragment.class.getSimpleName();
 
     private LatLng mLastPosition;
-    private static final int EVENT_LOADER = 1;
+    private static final int EVENT_LOADER = 2;
 
     private SelectEventAdapter mSelectEventAdapter;
     private Cursor mCursor;

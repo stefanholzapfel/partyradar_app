@@ -78,6 +78,7 @@ public class MainActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         mMenu = menu;
 
+        // needs to be run here, since it is manipulating the actionbar menu
         runAutoLogin();
 
         return true;
@@ -147,7 +148,7 @@ public class MainActivity extends ActionBarActivity {
                         String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 
                         if (authToken != null) {
-                            switchToLoggedIn();
+                            switchToLoggedInMode();
                         }
 
                     } catch (Exception e) {
@@ -173,11 +174,11 @@ public class MainActivity extends ActionBarActivity {
                 final String authToken = AuthenticationHelper.getToken(context, true);
                 if (authToken == null) return null;
 
-                // required, since the token is showed on the UI
+                // needs to be run as runOnUiThread, since the token is showed on the UI
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        switchToLoggedIn();
+                        switchToLoggedInMode();
                     }
                 });
 
@@ -186,7 +187,10 @@ public class MainActivity extends ActionBarActivity {
         }.execute(this);
     }
 
-    private void switchToLoggedIn() {
+    /**
+     * switching various UI elements to logged-in mode
+     */
+    private void switchToLoggedInMode() {
         Button loginButton = (Button) findViewById(R.id.main_btn_login);
         loginButton.setVisibility(View.INVISIBLE);
 
