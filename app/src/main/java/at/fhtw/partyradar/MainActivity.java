@@ -151,7 +151,7 @@ public class MainActivity extends ActionBarActivity {
                         String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 
                         if (authToken != null) {
-                            switchToLoggedInMode(authToken);
+                            switchToLoggedInMode();
                         }
 
                     } catch (Exception e) {
@@ -177,13 +177,11 @@ public class MainActivity extends ActionBarActivity {
                 final String authToken = AuthenticationHelper.getToken(context, true);
                 if (authToken == null) return null;
 
-                final String eventId = AuthenticationHelper.getLoggedInEvent(authToken);
-
-                // needs to be run as runOnUiThread, since the token is showed on the UI
+                // needs to be run as runOnUiThread (since a lot of UI elements need to be updated)
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        switchToLoggedInMode(eventId);
+                        switchToLoggedInMode();
                     }
                 });
 
@@ -194,9 +192,8 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * switching various UI elements to logged-in mode
-     * @param eventId eventId of the logged-in event
      */
-    private void switchToLoggedInMode(String eventId) {
+    private void switchToLoggedInMode() {
         if (mMenu != null) {
             MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
             item_attend.setVisible(true);
@@ -208,27 +205,43 @@ public class MainActivity extends ActionBarActivity {
         TextView text_username = (TextView) findViewById(R.id.main_username);
         text_username.setText(AuthenticationHelper.getUsername(this));
 
-        TextView text_loggedEventTitle = (TextView) findViewById(R.id.main_loggedEventTitle);
+        showLoggedInEvent(this);
+    }
 
-        String[] EVENT_COLUMNS = {
-                EventContract.EventEntry._ID,
-                EventContract.EventEntry.COLUMN_EVENT_ID,
-                EventContract.EventEntry.COLUMN_TITLE
-        };
+    private void showLoggedInEvent(final Context context) {
 
-        Uri eventDetailUri = EventContract.EventEntry.buildEventUri(eventId);
-        Cursor cursor = this.getContentResolver().query(
-                eventDetailUri,
-                EVENT_COLUMNS,
-                null,
-                null,
-                null
-        );
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String authToken = AuthenticationHelper.getToken(context, false);
+                return AuthenticationHelper.getLoggedInEvent(authToken);
+            }
 
-        if (cursor.moveToFirst()) {
-            String eventTitle = cursor.getString(2);
-            text_loggedEventTitle.setText(eventTitle);
-        }
+            @Override
+            protected void onPostExecute(String eventId) {
+                TextView text_loggedEventTitle = (TextView) findViewById(R.id.main_loggedEventTitle);
 
+                String[] EVENT_COLUMNS = {
+                        EventContract.EventEntry._ID,
+                        EventContract.EventEntry.COLUMN_EVENT_ID,
+                        EventContract.EventEntry.COLUMN_TITLE
+                };
+
+                Uri eventDetailUri = EventContract.EventEntry.buildEventUri(eventId);
+                Cursor cursor = context.getContentResolver().query(
+                        eventDetailUri,
+                        EVENT_COLUMNS,
+                        null,
+                        null,
+                        null
+                );
+
+                if (cursor.moveToFirst()) {
+                    String eventTitle = cursor.getString(2);
+                    text_loggedEventTitle.setText(eventTitle);
+                }
+            }
+
+        }.execute();
     }
 }
