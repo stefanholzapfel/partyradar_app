@@ -121,7 +121,6 @@ public class AuthenticationHelper {
 
         try {
             httpPost.setHeader("Authorization", "Bearer " + authToken);
-
             HttpResponse response = httpClient.execute(httpPost);
 
             if (response.getStatusLine().getStatusCode() == 200) return true;
@@ -146,6 +145,31 @@ public class AuthenticationHelper {
         if (accounts.length == 1) {
             Account acct = accounts[0];
             return acct.name;
+        }
+
+        return null;
+    }
+
+    /**
+     * returns the event-id of the event the user is currently logged-in
+     * @param authToken authentication token of the user
+     */
+    public static String getLoggedInEvent(String authToken) {
+        if (authToken == null) return null;
+
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/api/App/...");
+
+        try {
+            /*
+            httpPost.setHeader("Authorization", "Bearer " + authToken);
+            HttpResponse response = httpClient.execute(httpPost);
+            */
+            //if (response.getStatusLine().getStatusCode() == 200) return true;
+            return "3451d98b-a3ed-4d86-afad-7efe1ff249c3";
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
         }
 
         return null;

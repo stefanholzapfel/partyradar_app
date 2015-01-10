@@ -7,9 +7,12 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +22,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import at.fhtw.partyradar.authentication.AuthenticationHelper;
+import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.service.BackgroundLocationService;
 import at.fhtw.partyradar.service.FetchDataService;
 
@@ -148,7 +152,7 @@ public class MainActivity extends ActionBarActivity {
                         String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 
                         if (authToken != null) {
-                            switchToLoggedInMode();
+                            switchToLoggedInMode(authToken);
                         }
 
                     } catch (Exception e) {
@@ -178,7 +182,7 @@ public class MainActivity extends ActionBarActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        switchToLoggedInMode();
+                        switchToLoggedInMode(authToken);
                     }
                 });
 
@@ -189,17 +193,42 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * switching various UI elements to logged-in mode
+     * @param authToken authentication token of the user
      */
-    private void switchToLoggedInMode() {
+    private void switchToLoggedInMode(String authToken) {
+        if (mMenu != null) {
+            MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
+            item_attend.setVisible(true);
+        }
+
         Button loginButton = (Button) findViewById(R.id.main_btn_login);
         loginButton.setVisibility(View.INVISIBLE);
 
         TextView text_username = (TextView) findViewById(R.id.main_username);
         text_username.setText(AuthenticationHelper.getUsername(this));
 
-        if (mMenu != null) {
-            MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
-            item_attend.setVisible(true);
+        TextView text_loggedEventTitle = (TextView) findViewById(R.id.main_loggedEventTitle);
+        String eventId = AuthenticationHelper.getLoggedInEvent(authToken);
+
+        String[] EVENT_COLUMNS = {
+                EventContract.EventEntry._ID,
+                EventContract.EventEntry.COLUMN_EVENT_ID,
+                EventContract.EventEntry.COLUMN_TITLE
+        };
+
+        Uri eventDetailUri = EventContract.EventEntry.buildEventUri(eventId);
+        Cursor cursor = this.getContentResolver().query(
+                eventDetailUri,
+                EVENT_COLUMNS,
+                null,
+                null,
+                null
+        );
+
+        if (cursor.moveToFirst()) {
+            String eventTitle = cursor.getString(2);
+            text_loggedEventTitle.setText(eventTitle);
         }
+
     }
 }
