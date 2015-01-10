@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -126,8 +127,18 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         mapFragment.getMapAsync(this);
 
         // show the option to switch to the heat map only if logged in
-        if (AuthenticationHelper.getToken(getActivity(), false) != null)
-            mSwitch_showHeatMap.setVisibility(View.VISIBLE);
+        new AsyncTask<Context, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Context... params) {
+                if (AuthenticationHelper.getToken(getActivity(), false) != null) return true;
+                else return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isLoggedIn) {
+                if (isLoggedIn) mSwitch_showHeatMap.setVisibility(View.VISIBLE);
+            }
+        }.execute(getActivity());
 
         return rootView;
     }
