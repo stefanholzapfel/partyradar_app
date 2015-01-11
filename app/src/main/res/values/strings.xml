@@ -50,6 +50,5 @@
     <string name="eventlist_title">PARTY OVERVIEW</string>
     <string name="title_filter">Partyfilter tags:</string>
     <string name="eventlist_sorter_title">Sorty by:</string>
-
-
+    <string name="details_nopicture">No picture available!</string>
 </resources>
