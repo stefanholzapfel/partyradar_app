@@ -151,7 +151,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     {
         @Override
         protected Bitmap doInBackground(String... params) {
-            Log.v(LOG_TAG, "IN DO IN BACKGROUND");
 
             HttpClient httpClient = new DefaultHttpClient();
             HttpGet request = new HttpGet();
@@ -173,7 +172,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 Log.e(LOG_TAG, "Error in fetching image from Service: " + e.getMessage(), e);
                 return null;
             }
-            Log.v(LOG_TAG, "STRING: " + imageString);
             try {
 
                 byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
