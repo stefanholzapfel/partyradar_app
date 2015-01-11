@@ -123,4 +123,19 @@ public class Utility {
         return bd.doubleValue();
     }
 
+    /**
+     * returns a user friendly date
+     * @param date Date string in format as stored in dataprovider
+     * @return string friendly date
+     */
+    public static String getFriendlyDate(String date) {
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");
+            Date dt = df.parse(date);
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(dt);
+        } catch (Exception ex) {
+            return "";
+        }
+    }
+
 }

@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.net.URI;
 
 import at.fhtw.partyradar.data.EventContract;
+import at.fhtw.partyradar.helper.Utility;
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>  {
 
@@ -139,8 +140,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             }
             else
                 mWebsite.setVisibility(View.GONE);
-            mStart.setText(data.getString(9));
-            mEnd.setText(data.getString(10));
+            mStart.setText(Utility.getFriendlyDate(data.getString(9)));
+            mEnd.setText(Utility.getFriendlyDate(data.getString(10)));
         }
     }
 
