@@ -50,6 +50,10 @@
     <string name="eventlist_title">PARTY OVERVIEW</string>
     <string name="title_filter">Partyfilter tags:</string>
     <string name="eventlist_sorter_title">Sorty by:</string>
-
+    <string-array name="eventlist_sortby">
+        <item>Distance</item>
+        <item>Name</item>
+        <item>Attendees</item>
+    </string-array>
 
 </resources>
