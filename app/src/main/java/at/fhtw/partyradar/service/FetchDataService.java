@@ -63,9 +63,9 @@ public class FetchDataService extends IntentService {
         c.setTime(dt);
 
         // time frame filter
-        c.add(Calendar.DATE, -10);
+        c.add(Calendar.DATE, -20);
         Date startDate = c.getTime();
-        c.add(Calendar.DATE, 30);
+        c.add(Calendar.DATE, 40);
         Date endDate = c.getTime();
 
         String startDateStr = new SimpleDateFormat("yyyy-MM-dd").format(startDate);
