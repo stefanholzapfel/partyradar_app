@@ -32,15 +32,16 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
     private PendingIntent mDataPendingIntent;
     private Menu mMenu;
 
+    private String mLoggedEventId;
+    private String mAuthToken;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.events_container, new EventListFragment())
-                    .commit();
+            showListFragment(null);
         }
 
         // define the intent for the background location service (will be started later)
@@ -96,14 +97,17 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         if (id == R.id.action_select_event) {
             DialogFragment newFragment = new SelectEventFragment();
             newFragment.show(getSupportFragmentManager(), "select_event");
-
             return true;
         }
 
         if (id == R.id.action_refresh) {
             Intent sendIntent = new Intent(this, FetchDataService.class);
             startService(sendIntent);
+            return true;
+        }
 
+        if (id == R.id.action_logOutEvent) {
+            logOutEvent();
             return true;
         }
 
@@ -132,16 +136,12 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         showLoggedInEvent(this);
     }
 
-    // TODO: Remove temporary method
-    // TODO: Find a a better way to switch, so fragment is not created anew
     public void showListFragment(View view) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.events_container, new EventListFragment())
                 .commit();
     }
 
-    // TODO: Remove temporary method
-    // TODO: Find a a better way to switch, so fragment is not created anew
     public void showMapFragment(View view) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.events_container, new EventMapFragment())
@@ -167,6 +167,7 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
                         String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 
                         if (authToken != null) {
+                            mAuthToken = authToken;
                             switchToLoggedInMode();
                         }
 
@@ -192,6 +193,8 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
                 // get new token (by invalidating the old one)
                 final String authToken = AuthenticationHelper.getToken(context, true);
                 if (authToken == null) return null;
+
+                mAuthToken = authToken;
 
                 // needs to be run as runOnUiThread (since a lot of UI elements need to be updated)
                 runOnUiThread(new Runnable() {
@@ -224,6 +227,9 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         TextView text_username = (TextView) findViewById(R.id.main_username);
         text_username.setText(AuthenticationHelper.getUsername(this));
 
+        TextView text_loggedEventTitle = (TextView) findViewById(R.id.main_loggedEventTitle);
+        text_loggedEventTitle.setText(getString(R.string.text_none));
+
         showLoggedInEvent(this);
     }
 
@@ -236,8 +242,9 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                String authToken = AuthenticationHelper.getToken(context, false);
-                return AuthenticationHelper.getLoggedInEvent(authToken);
+                //String authToken = AuthenticationHelper.getToken(context, false);
+                mLoggedEventId = AuthenticationHelper.getLoggedInEvent(mAuthToken);
+                return mLoggedEventId;
             }
 
             @Override
@@ -262,9 +269,33 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
                 if (cursor.moveToFirst()) {
                     String eventTitle = cursor.getString(2);
                     text_loggedEventTitle.setText(eventTitle);
+
+                    if (mMenu != null) {
+                        MenuItem item_attend = mMenu.findItem(R.id.action_logOutEvent);
+                        item_attend.setVisible(true);
+                    }
                 }
             }
 
+        }.execute();
+    }
+
+    private void logOutEvent() {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                return AuthenticationHelper.logOutEvent(mLoggedEventId, mAuthToken);
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (success) {
+                    mLoggedEventId = null;
+
+                    TextView text_loggedEventTitle = (TextView) findViewById(R.id.main_loggedEventTitle);
+                    text_loggedEventTitle.setText(getString(R.string.text_none));
+                }
+            }
         }.execute();
     }
 }

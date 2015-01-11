@@ -135,6 +135,31 @@ public class AuthenticationHelper {
     }
 
     /**
+     * logs the user out of an event
+     * (this must not run in the main / UI thread, or an Exception will occur)
+     * @param eventId id of the event
+     * @param authToken authentication token of the user
+     */
+    public static boolean logOutEvent(String eventId, String authToken) {
+        if (eventId == null || authToken == null) return false;
+
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/api/App/LogoutEvent?eventId=" + eventId);
+
+        try {
+            httpPost.setHeader("Authorization", "Bearer " + authToken);
+            HttpResponse response = httpClient.execute(httpPost);
+
+            if (response.getStatusLine().getStatusCode() == 200) return true;
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+        }
+
+        return false;
+    }
+
+    /**
      * returns the (user)name of the account
      * @param context context of the app
      */
