@@ -15,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -92,6 +93,18 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
 
         mListView = (ListView) rootView.findViewById(R.id.event_list_view);
         mListView.setAdapter(mEventListAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Cursor cursor = mEventListAdapter.getCursor();
+                if (cursor != null && cursor.moveToPosition(position)) {
+                    Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("eventId", cursor.getString(COL_EVENT_ID));
+                    startActivity(intent);
+                }
+                mPosition = position;
+            }
+        });
+
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listView probably hasn't even been populated yet. Actually perform the
