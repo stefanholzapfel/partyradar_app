@@ -45,6 +45,7 @@
     <string name="details_title">PARTY DETAILS</string>
     <string name="details_end">End at:</string>
     <string name="details_start">Start at:</string>
+    <string name="details_nopicture">No picture available!</string>
 
     <!-- for event list fragment -->
     <string name="eventlist_title">PARTY OVERVIEW</string>
