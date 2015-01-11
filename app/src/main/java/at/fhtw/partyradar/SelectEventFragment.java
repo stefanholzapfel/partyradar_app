@@ -69,7 +69,6 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         //Log.d(LOG_TAG, "onCreateDialog");
-        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_selectevent, null);
 
         // get the latest known position
         mLastPosition = Utility.getPositionFromStorage(getActivity());
@@ -77,7 +76,6 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.title_select_event)
-                .setView(view)
                 .setAdapter(mSelectEventAdapter, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         attendEvent(which);
@@ -142,6 +140,9 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
         //Log.d(LOG_TAG, "onLoadFinished");
         mCursor = data;
         mSelectEventAdapter.swapCursor(data);
+
+        if (data.getCount() == 0)
+            Toast.makeText(getActivity(),getActivity().getString(R.string.select_event_noneAvailable), Toast.LENGTH_LONG).show();
     }
 
     @Override

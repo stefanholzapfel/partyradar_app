@@ -6,10 +6,12 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_showHeatMap">Show heat map</string>
     <string name="action_login">Login</string>
+    <string name="action_logout">Logout</string>
 
     <string name="action_select_event">Attend party</string>
     <string name="title_select_event">Where to log in?</string>
     <string name="action_cancel">Cancel</string>
+    <string name="select_event_noneAvailable">No event in your local area</string>
     <string name="attend_success">Logged in successfully</string>
     <string name="attend_failed">Login to event failed</string>
 
