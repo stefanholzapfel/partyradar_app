@@ -107,7 +107,7 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         }
 
         if (id == R.id.action_logOutEvent) {
-            logOutEvent();
+            logOutFromEvent();
             return true;
         }
 
@@ -242,7 +242,6 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                //String authToken = AuthenticationHelper.getToken(context, false);
                 mLoggedEventId = AuthenticationHelper.getLoggedInEvent(mAuthToken);
                 return mLoggedEventId;
             }
@@ -280,7 +279,10 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         }.execute();
     }
 
-    private void logOutEvent() {
+    /**
+     * logs the user out of an event
+     */
+    private void logOutFromEvent() {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
