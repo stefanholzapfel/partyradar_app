@@ -181,4 +181,20 @@ public class AuthenticationHelper {
 
         return null;
     }
+
+    /**
+     * logs out the currently active user / account
+     * @param context context of the activity
+     */
+    public static void logoutUser(Context context) {
+        if (context == null) return;
+
+        AccountManager accountManager = AccountManager.get(context);
+        Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.auth_account_type));
+
+        if (accounts.length == 1) {
+            Account acct = accounts[0];
+            accountManager.removeAccount(acct, null, null);
+        }
+    }
 }

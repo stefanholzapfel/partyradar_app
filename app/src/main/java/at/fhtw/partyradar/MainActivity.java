@@ -108,6 +108,16 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
             return true;
         }
 
+        if (id == R.id.action_logout) {
+            AuthenticationHelper.logoutUser(this);
+
+            // reload activity, so it is in clean logged-out state
+            finish();
+            startActivity(getIntent());
+
+            return true;
+        }
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
