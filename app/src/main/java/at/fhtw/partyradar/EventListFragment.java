@@ -12,14 +12,17 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.internal.widget.AdapterViewCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -28,7 +31,7 @@ import at.fhtw.partyradar.data.EventContract.EventEntry;
 import at.fhtw.partyradar.helper.Utility;
 import at.fhtw.partyradar.service.BackgroundLocationService;
 
-public class EventListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class EventListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener {
 
     protected static final String LOG_TAG = EventListFragment.class.getSimpleName();
     private EventListAdapter mEventListAdapter;
@@ -50,6 +53,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             EventEntry.COLUMN_ADDRESS_ADDITIONS,
             EventEntry.COLUMN_CITY,
             EventEntry.COLUMN_KEYWORDS,
+            EventEntry.COLUMN_ATTENDEECOUNT
     };
 
     // Indices tied to the EVENT_COLUMNS. If EVENT_COLUMNS changes, these have to be adapted.
@@ -61,7 +65,12 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     public static final int COL_ADDRESS_ADDITIONS = 5;
     public static final int COL_CITY = 6;
     public static final int COL_KEYWORDS = 7;
-    public static final int COL_DISTANCE = 8;
+    public static final int COL_ATTENDEECOUNT = 8;
+    public static final int COL_DISTANCE = 9;
+
+    private Bundle cursorParams;
+
+    private Spinner sortBySpinner;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -118,6 +127,8 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
 
+        cursorParams = new Bundle();
+
         EditText mTagFilterText = (EditText) rootView.findViewById(R.id.event_tag_filter);
 
         mTagFilterText.addTextChangedListener(new TextWatcher() {
@@ -133,6 +144,16 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             }
         });
 
+        sortBySpinner = (Spinner) rootView.findViewById(R.id.event_sortby);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getActivity(),
+                R.array.eventlist_sortby, android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        sortBySpinner.setAdapter(adapter);
+
+        sortBySpinner.setOnItemSelectedListener(this);
+
         return rootView;
 
     }
@@ -141,9 +162,8 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         if(!s.toString().equals("#") || s.length() > 1) {
             String[] keywords = s.toString().replaceFirst("^#", "").split("#");
             if(keywords.length > 0) {
-                Bundle params = new Bundle();
-                params.putStringArray("keywords", keywords);
-                getLoaderManager().restartLoader(EVENT_LOADER, params, this);
+                cursorParams.putStringArray("keywords", keywords);
+                getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, this);
             }
         } else if(s.length() == 0)
             getLoaderManager().restartLoader(EVENT_LOADER, null, this);
@@ -185,12 +205,18 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         Uri eventsWithinAreaUri = EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range)));
 
         String selection = null;
+        String sortBy = null;
 
-        if(args != null && !args.isEmpty() && args.getStringArray("keywords").length > 0) {
-            String[] keywords = args.getStringArray("keywords");
-            selection = EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%#" + keywords[0] + "%'";
-            for (int i = 1; i < keywords.length ; i++)
-                selection += " AND " + EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%" + keywords[i] + "%'";
+        if(args != null && !args.isEmpty()) {
+            if(args.getStringArray("keywords") != null && args.getStringArray("keywords").length > 0) {
+                String[] keywords = args.getStringArray("keywords");
+                selection = EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%#" + keywords[0] + "%'";
+                for (int i = 1; i < keywords.length ; i++)
+                    selection += " AND " + EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%" + keywords[i] + "%'";
+            }
+            if(args.getString("sortBy").length() > 0) {
+                sortBy = args.getString("sortBy");
+            }
         }
         // Creating and returning cursor
         return new CursorLoader(
@@ -199,7 +225,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             EVENT_COLUMNS, // columns to return
             selection, // cols for "where" clause
             null, // values for "where" clause
-            null  // sort order
+            sortBy  // sort order
         );
     }
 
@@ -216,5 +242,30 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mEventListAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String selectedSort = sortBySpinner.getItemAtPosition(i).toString();
+        String sortBy = "";
+        switch (selectedSort) {
+            case "Distance":
+                sortBy = "distance";
+                break;
+            case "Name":
+                sortBy = EVENT_COLUMNS[COL_TITLE];
+                break;
+            case "Attendees":
+                sortBy = EVENT_COLUMNS[COL_ATTENDEECOUNT];
+                break;
+        }
+        sortBy += " ASC";
+        cursorParams.putString("sortBy", sortBy);
+        getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, this);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }
