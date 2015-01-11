@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import at.fhtw.partyradar.authentication.AuthenticationHelper;
@@ -131,7 +130,6 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         showLoggedInEvent(this);
     }
 
-
     // TODO: Remove temporary method
     // TODO: Find a a better way to switch, so fragment is not created anew
     public void showListFragment(View view) {
@@ -215,8 +213,11 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
             item_attend.setVisible(true);
         }
 
-        Button loginButton = (Button) findViewById(R.id.main_btn_login);
-        loginButton.setVisibility(View.INVISIBLE);
+        View area_loggedOut = findViewById(R.id.area_loggedOut);
+        area_loggedOut.setVisibility(View.GONE);
+
+        View area_loggedIn = findViewById(R.id.area_loggedIn);
+        area_loggedIn.setVisibility(View.VISIBLE);
 
         TextView text_username = (TextView) findViewById(R.id.main_username);
         text_username.setText(AuthenticationHelper.getUsername(this));
