@@ -12,13 +12,17 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.android.gms.maps.model.LatLng;
+
 
 import at.fhtw.partyradar.data.EventContract.EventEntry;
 import at.fhtw.partyradar.helper.Utility;
@@ -44,7 +48,8 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             EventEntry.COLUMN_LOCATION_NAME,
             EventEntry.COLUMN_ADDRESS,
             EventEntry.COLUMN_ADDRESS_ADDITIONS,
-            EventEntry.COLUMN_CITY
+            EventEntry.COLUMN_CITY,
+            EventEntry.COLUMN_KEYWORDS,
     };
 
     // Indices tied to the EVENT_COLUMNS. If EVENT_COLUMNS changes, these have to be adapted.
@@ -55,7 +60,8 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     public static final int COL_ADDRESS = 4;
     public static final int COL_ADDRESS_ADDITIONS = 5;
     public static final int COL_CITY = 6;
-    public static final int COL_DISTANCE= 7;
+    public static final int COL_KEYWORDS = 7;
+    public static final int COL_DISTANCE = 8;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -112,8 +118,35 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
 
+        EditText mTagFilterText = (EditText) rootView.findViewById(R.id.event_tag_filter);
+
+        mTagFilterText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i2, int i3) {
+                filterEventData(s);
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
         return rootView;
 
+    }
+
+    private void filterEventData(CharSequence s) {
+        if(!s.toString().equals("#") || s.length() > 1) {
+            String[] keywords = s.toString().replaceFirst("^#", "").split("#");
+            if(keywords.length > 0) {
+                Bundle params = new Bundle();
+                params.putStringArray("keywords", keywords);
+                getLoaderManager().restartLoader(EVENT_LOADER, params, this);
+            }
+        } else if(s.length() == 0)
+            getLoaderManager().restartLoader(EVENT_LOADER, null, this);
     }
 
     @Override
@@ -151,12 +184,20 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         // Building Uri for content provider
         Uri eventsWithinAreaUri = EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.events_max_range)));
 
+        String selection = null;
+
+        if(args != null && !args.isEmpty() && args.getStringArray("keywords").length > 0) {
+            String[] keywords = args.getStringArray("keywords");
+            selection = EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%#" + keywords[0] + "%'";
+            for (int i = 1; i < keywords.length ; i++)
+                selection += " AND " + EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%" + keywords[i] + "%'";
+        }
         // Creating and returning cursor
         return new CursorLoader(
             getActivity(),
             eventsWithinAreaUri,
             EVENT_COLUMNS, // columns to return
-            null, // cols for "where" clause
+            selection, // cols for "where" clause
             null, // values for "where" clause
             null  // sort order
         );

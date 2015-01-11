@@ -43,9 +43,12 @@ public class EventListAdapter extends CursorAdapter {
         Double distance = Utility.rad2meter(cursor.getDouble(EventListFragment.COL_DISTANCE));
         // Build string for small text view
         String smallTextViewContent = locationName + " - " + address + " " + addressAdditions + " " + city + "  - Distance: " + Utility.getFriendlyDistance(distance);
+        // Read keywords
+        String keywords = cursor.getString(EventListFragment.COL_KEYWORDS);
 
         viewHolder.largeTextView.setText(largeTextViewContent);
         viewHolder.smallTextView.setText(smallTextViewContent);
+        viewHolder.keywordsTextView.setText(keywords);
     }
 
     /**
@@ -54,10 +57,12 @@ public class EventListAdapter extends CursorAdapter {
     public static class ViewHolder {
         public final TextView largeTextView;
         public final TextView smallTextView;
+        public final TextView keywordsTextView;
 
         public ViewHolder(View view) {
             largeTextView = (TextView) view.findViewById(R.id.list_item_event_list_large);
             smallTextView = (TextView) view.findViewById(R.id.list_item_event_list_small);
+            keywordsTextView = (TextView) view.findViewById(R.id.list_item_event_list_keywords);
         }
     }
 }
