@@ -18,16 +18,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 
 import at.fhtw.partyradar.data.EventContract;
 
@@ -45,6 +43,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public TextView mStart;
     public TextView mEnd;
     public ImageView mPicture;
+    public TextView mPictureText;
 
     public DetailFragment() {
     }
@@ -65,6 +64,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Bundle arguments = getArguments();
         if (arguments != null && arguments.containsKey("eventId")) {
             getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+            new GetImage().execute(arguments.getString("eventId"));
         }
     }
 
@@ -79,8 +79,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mStart = (TextView) rootView.findViewById(R.id.textView_start);
         mEnd = (TextView) rootView.findViewById(R.id.textView_end);
         mPicture = (ImageView) rootView.findViewById(R.id.imageView_partypic);
-
+        mPictureText = (TextView) rootView.findViewById(R.id.textView_partypic);
         new GetImage().execute(getArguments().getString("eventId"));
+
         return rootView;
     }
 
@@ -151,80 +152,50 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         @Override
         protected Bitmap doInBackground(String... params) {
             Log.v(LOG_TAG, "IN DO IN BACKGROUND");
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-            String eventsJsonStr = null;
-            String imagestring = "";
+
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpGet request = new HttpGet();
+            String imageString;
 
             try {
-                final String EVENTS_BASE_URL = "http://wi-gate.technikum-wien.at:60349/api/App/GetEventPicture?";
-                final String QUERY_PARAM_ID = "eventId";
+                request.setURI(new URI ("http://wi-gate.technikum-wien.at:60349/api/App/GetEventPicture?eventId=" + params[0]));
+                HttpResponse response = httpClient.execute(request);
 
-                Uri builtUri = Uri.parse(EVENTS_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM_ID, params[0])
-                        .build();
-                URL url = new URL(builtUri.toString());
+                if (response.getStatusLine().getStatusCode() != 200) return null;
 
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
+                String responseStr = EntityUtils.toString(response.getEntity());
+                JSONObject responseJson = new JSONObject(responseStr);
+                JSONObject resultJson = responseJson.getJSONObject("Result");
 
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-
-                if (inputStream == null) {
-                    return null;
-                }
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-                if (buffer.length() == 0) {
-                    return null;
-                }
-                eventsJsonStr = buffer.toString();
-
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                //JSONArray resultArray = responseJson.getJSONArray("Result");
+                imageString =  resultJson.getString("Image");
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error in fetching image from Service: " + e.getMessage(), e);
                 return null;
-
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
             }
-
+            Log.v(LOG_TAG, "STRING: " + imageString);
             try {
-                JSONObject eventsJson = new JSONObject(eventsJsonStr);
-                JSONArray eventsArray = eventsJson.getJSONArray("Result");
-                JSONObject event = eventsArray.getJSONObject(0);
-                imagestring = event.getString("Image");
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
+
+                byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                return decodedByte;
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error in converting base64 String to bitmap: " + e.getMessage(), e);
                 return null;
             }
-            Log.v(LOG_TAG, "STRING: " + imagestring);
-            byte[] decodedString = Base64.decode(imagestring, Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            return decodedByte;
         }
 
         @Override
         protected void onPostExecute(Bitmap result) {
-            mPicture.setImageBitmap(result);
+            if (result != null) {
+                mPictureText.setVisibility(View.GONE);
+                mPicture.setVisibility(View.VISIBLE);
+                mPicture.setImageBitmap(result);
+            }
+            else {
+                mPicture.setVisibility(View.GONE);
+                mPictureText.setVisibility(View.VISIBLE);
+            }
         }
 
     }
