@@ -33,12 +33,15 @@ import at.fhtw.partyradar.service.BackgroundLocationService;
 public class EventListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener {
 
     protected static final String LOG_TAG = EventListFragment.class.getSimpleName();
+
     private EventListAdapter mEventListAdapter;
     private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
     private static final String SELECTED_KEY = "selected_key";
     private LatLng mLastPosition;
     private BroadcastReceiver mReceiver;
+
+    private EventListFragment mThisContext;
 
     private static final int EVENT_LOADER = 0;
 
@@ -68,7 +71,6 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     public static final int COL_DISTANCE = 9;
 
     private Bundle cursorParams;
-
     private Spinner sortBySpinner;
 
     public EventListFragment() {
@@ -78,6 +80,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mThisContext = this;
 
         // prepare and register for broadcasts of location updates
         IntentFilter intentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
@@ -88,8 +91,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
                 String[] latLngSplit = latLngString.split("\\|");
 
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
-
-                // TODO: reloading list when the position changed, or on regular interval?
+                getLoaderManager().restartLoader(EVENT_LOADER, null, mThisContext);
             }
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
@@ -150,7 +152,6 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         sortBySpinner.setAdapter(adapter);
-
         sortBySpinner.setOnItemSelectedListener(this);
 
         return rootView;
