@@ -42,6 +42,7 @@
     <string name="text_wrong_user_password">Wrong username or password</string>
 
     <!-- for detail fragment -->
+    <string name="activity_detail_title">Party Details</string>
     <string name="details_title">PARTY DETAILS</string>
     <string name="details_end">End at:</string>
     <string name="details_start">Start at:</string>

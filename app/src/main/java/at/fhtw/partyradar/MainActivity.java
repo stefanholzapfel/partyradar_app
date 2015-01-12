@@ -216,6 +216,9 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         if (mMenu != null) {
             MenuItem item_attend = mMenu.findItem(R.id.action_select_event);
             item_attend.setVisible(true);
+
+            MenuItem item_logout = mMenu.findItem(R.id.action_logout);
+            item_logout.setVisible(true);
         }
 
         View area_loggedOut = findViewById(R.id.area_loggedOut);
