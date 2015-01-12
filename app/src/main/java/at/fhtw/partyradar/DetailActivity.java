@@ -8,7 +8,6 @@ import android.view.MenuItem;
 
 import at.fhtw.partyradar.service.FetchDataService;
 
-
 public class DetailActivity extends ActionBarActivity {
 
     private final String LOG_TAG = DetailActivity.class.getSimpleName();
@@ -56,6 +55,12 @@ public class DetailActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        // for a better transition from event detail to main activity when clicking on "up navigation" button (so main activity is resumed)
+        if (id == android.R.id.home) {
+            onBackPressed();
             return true;
         }
 
