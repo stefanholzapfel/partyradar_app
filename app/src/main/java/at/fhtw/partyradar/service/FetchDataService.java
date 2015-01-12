@@ -56,7 +56,7 @@ public class FetchDataService extends IntentService {
 
         // range filter
         LatLng lastPosition = Utility.getPositionFromStorage(this);
-        Double radius = 30000.0;        // in meters
+        Double radius = 50000.0;        // in meters
 
         Calendar c = Calendar.getInstance();
         Date dt = new Date();
@@ -186,8 +186,8 @@ public class FetchDataService extends IntentService {
 
                 eventId = event.getString(EVENTS_EVENTID);
                 title = event.getString(EVENTS_TITLE);
-                start = Utility.dbDate2Text(event.getString(EVENTS_START));
-                end = Utility.dbDate2Text(event.getString(EVENTS_END));
+                start = Utility.apiDate2dbDate(event.getString(EVENTS_START));
+                end = Utility.apiDate2dbDate(event.getString(EVENTS_END));
                 description = event.getString(EVENTS_DESCRIPTION);
                 website = event.getString(EVENTS_WEBSITE);
                 attendeeCount = event.getInt(EVENTS_ATTENDEECOUNT);

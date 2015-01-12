@@ -75,7 +75,7 @@ public class Utility {
      * @param dbDate date as "yyyy-MM-dd'T'HH:mm:ss"
      * @return date as "yyyyMMddHHmm"
      */
-    public static String dbDate2Text(String dbDate) {
+    public static String apiDate2dbDate(String dbDate) {
         // 2014-12-31T23:00:00
         try {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
