@@ -176,8 +176,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             try {
 
                 byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                return decodedByte;
+                return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error in converting base64 String to bitmap: " + e.getMessage(), e);
                 return null;

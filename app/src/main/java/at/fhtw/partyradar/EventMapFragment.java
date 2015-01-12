@@ -153,9 +153,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         mMap = map;
         mMap.setMyLocationEnabled(true);
         mMap.setOnMarkerClickListener(this);
-
-        // TODO: activate before release, since the AVD emulator is crashing if this feature is used
-        //mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
         // centering the map to the latest known position
         if (mLastPosition != null) {
