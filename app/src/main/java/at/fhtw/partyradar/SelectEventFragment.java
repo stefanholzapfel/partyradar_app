@@ -13,7 +13,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -95,9 +94,6 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
 
     private void attendEvent(int position) {
         mCursor.moveToPosition(position);
-        final String eventId = mCursor.getString(COL_EVENT_ID);
-        final String authToken = AuthenticationHelper.getToken(getActivity(), false);
-        //Log.d(LOG_TAG, "Selected title: " + mCursor.getString(COL_TITLE));
 
         new AsyncTask<Context, Void, Boolean>() {
             Context mContext;
@@ -105,6 +101,8 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
             @Override
             protected Boolean doInBackground(Context... params) {
                 mContext = params[0];
+                String authToken = AuthenticationHelper.getToken(getActivity(), false);
+                String eventId = mCursor.getString(COL_EVENT_ID);
                 return AuthenticationHelper.logInEvent(eventId, authToken);
             }
 
