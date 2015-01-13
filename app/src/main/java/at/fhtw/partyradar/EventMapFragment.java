@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,6 +53,8 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
 
     private BroadcastReceiver mReceiver;
     private Cursor mEventData;
+
+    private HashMap<String, String> mMarkerMap = new HashMap<>();
 
     private static final int EVENT_LOADER = 1;
 
@@ -160,6 +163,17 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 12));
         }
 
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                String eventId = mMarkerMap.get(marker.getId());
+                if (eventId != null) {
+                    Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra("eventId", eventId);
+                    startActivity(intent);
+                }
+            }
+        });
+
         // initiate retrieving the events data
         getLoaderManager().initLoader(EVENT_LOADER, null, this);
     }
@@ -178,6 +192,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         if (mEventData == null || mEventData.getCount() == 0) return;
 
         mMap.clear();
+        mMarkerMap.clear();
         List<WeightedLatLng> eventsForHeatMap = new LinkedList<>();
 
         // required, because the cursor is re-run several times and we need to get to the first position
@@ -200,11 +215,13 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             }
             // drawing the markers
             else {
-                mMap.addMarker(new MarkerOptions()
+                Marker marker = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(event_latitude, event_longitude))
                         .title(event_title)
                         .snippet(event_locationName)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+                mMarkerMap.put(marker.getId(), mEventData.getString(COL_EVENT_ID));
             }
         } while (mEventData.moveToNext());
 
