@@ -46,19 +46,35 @@ public class EventContract {
         public static final String COLUMN_DISTANCE = "distance";
 
         private static final String QUERYPARAM_RADIUS = "radius";
+        private static final String QUERYPARAM_FROMTIME = "from";
+        private static final String QUERYPARAM_TOTIME = "to";
 
         public static Uri buildEventUri(String id) {
             return Uri.parse(BASE_CONTENT_URI + "/" + PATH_EVENT + "/" + id);
         }
 
         /**
-         * builds URI for all events within an area (no time frame)
+         * builds URI for all events within an area (no time range)
          * @param latitude latitude of center position
          * @param longitude longitude of center position
          * @param radius radius in meters
          */
         public static Uri buildEventWithinArea(double latitude, double longitude, double radius) {
             return BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENTAREA).appendQueryParameter(QUERYPARAM_RADIUS, Double.toString(radius)).appendQueryParameter(COLUMN_LATITUDE, Double.toString(latitude)).appendQueryParameter(COLUMN_LONGITUDE, Double.toString(longitude)).build();
+        }
+
+        /**
+         * builds URI for all events within an area and time range
+         * @param latitude latitude of center position
+         * @param longitude longitude of center position
+         * @param radius radius in meters
+         * @param from from start date and time (as yyyyMMddHHmm)
+         * @param to to start date and time (as yyyyMMddHHmm)
+         */
+        public static Uri buildEventWithinAreaAndTime(double latitude, double longitude, double radius, String from, String to) {
+            if (from == null) from = "";
+            if (to == null) to = "";
+            return BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENTAREA).appendQueryParameter(QUERYPARAM_RADIUS, Double.toString(radius)).appendQueryParameter(COLUMN_LATITUDE, Double.toString(latitude)).appendQueryParameter(COLUMN_LONGITUDE, Double.toString(longitude)).appendQueryParameter(QUERYPARAM_FROMTIME, from).appendQueryParameter(QUERYPARAM_TOTIME, to).build();
         }
 
         public static String getIdFromUri(Uri uri) {
@@ -75,6 +91,14 @@ public class EventContract {
 
         public static String getLatFromUri(Uri uri) {
             return uri.getQueryParameter(COLUMN_LATITUDE);
+        }
+
+        public static String getFromTimeFromUri(Uri uri) {
+            return uri.getQueryParameter(QUERYPARAM_FROMTIME);
+        }
+
+        public static String getToTimeFromUri(Uri uri) {
+            return uri.getQueryParameter(QUERYPARAM_TOTIME);
         }
     }
 

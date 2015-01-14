@@ -112,6 +112,9 @@ public class EventProvider extends ContentProvider {
                 double lat = Double.parseDouble(EventContract.EventEntry.getLatFromUri(uri));
                 double lng = Double.parseDouble(EventContract.EventEntry.getLngFromUri(uri));
 
+                String fromTime = EventContract.EventEntry.getFromTimeFromUri(uri);
+                String toTime = EventContract.EventEntry.getToTimeFromUri(uri);
+
                 // required for the distance calculation (pre-calculating certain values, since SQLite cannot do that in the query)
                 double coslat = Math.cos(Utility.deg2rad(lat));
                 double sinlat = Math.sin(Utility.deg2rad(lat));
@@ -128,15 +131,14 @@ public class EventProvider extends ContentProvider {
                 if (selection != null) extendedSelection = selection + " AND ";
                 extendedSelection += "distance > " + Double.toString(Math.cos(radius / 6371.0));
 
-                /*
-                retCursor = mOpenHelper.getReadableDatabase()
-                        .rawQuery("SELECT *, " +
-                            "( " + coslat + " * coslat * (coslng * " + coslng + " + sinlng * " + sinlng + ") + " + sinlat + " * sinlat) AS " + EventContract.EventEntry.COLUMN_DISTANCE + " " +
-                            "FROM " + EventContract.EventEntry.TABLE_NAME + " " +
-                            "WHERE distance > " + Math.cos(radius / 6371.0) + " " +
-                            "ORDER BY distance DESC",
-                        selectionArgs);
-                */
+                // extending the selection of the query by filtering for the time
+                if (!fromTime.isEmpty()) {
+                    extendedSelection += " AND " + EventContract.EventEntry.COLUMN_START + " > '" + fromTime + "'";
+                }
+
+                if (!toTime.isEmpty()) {
+                    extendedSelection += " AND " + EventContract.EventEntry.COLUMN_START + " < '" + toTime + "'";
+                }
 
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         EventContract.EventEntry.TABLE_NAME,

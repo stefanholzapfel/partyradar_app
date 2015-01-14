@@ -277,6 +277,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         String selection = null;
         String sortBy = null;
 
+        // TODO: SQL should be moved to the ContentProvider (parameters sent via the URI)
         if(args != null && !args.isEmpty()) {
             if(args.getStringArrayList("keywords") != null && !args.getStringArrayList("keywords").isEmpty()) {
                 ArrayList<String> keywords = args.getStringArrayList("keywords");
