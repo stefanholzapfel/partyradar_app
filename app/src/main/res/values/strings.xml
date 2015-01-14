@@ -39,8 +39,8 @@
     <string name="attend_max_range" translatable="false">1000</string>
 
     <!-- for authenticator -->
-    <string name="auth_account_type">partyradar.fhtw.at</string>
-    <string name="content_authority">at.fhtw.partyradar.app</string>
+    <string name="auth_account_type" translatable="false">partyradar.fhtw.at</string>
+    <string name="content_authority" translatable="false">at.fhtw.partyradar.app</string>
     <string name="token_full_access_label">Full access to all events and locations</string>
     <string name="title_activity_login">Log in</string>
     <string name="text_wrong_user_password">Wrong username or password</string>
@@ -55,7 +55,7 @@
     <!-- for event list fragment -->
     <string name="eventlist_title">PARTY OVERVIEW</string>
     <string name="title_filter">Partyfilter tags:</string>
-    <string name="eventlist_sorter_title">Sorty by:</string>
+    <string name="eventlist_sorter_title">Sort by:</string>
 
     <string-array name="eventlist_sortby">
         <item>Distance</item>
