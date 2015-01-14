@@ -170,8 +170,9 @@ public class EventProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        // the bulk insert is notifying this URI, so we need to set the notification for it as well
+        // the bulk insert is notifying these URIs, so we need to set the notification for it as well
         retCursor.setNotificationUri(getContext().getContentResolver(), EventContract.EventEntry.CONTENT_URI);
+        retCursor.setNotificationUri(getContext().getContentResolver(), EventContract.KeywordEntry.CONTENT_URI);
         return retCursor;
     }
 
