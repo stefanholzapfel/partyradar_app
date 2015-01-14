@@ -81,6 +81,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mEnd = (TextView) rootView.findViewById(R.id.textView_end);
         mPicture = (ImageView) rootView.findViewById(R.id.imageView_partypic);
         mPictureText = (TextView) rootView.findViewById(R.id.textView_partypic);
+        mPictureText.setVisibility(View.GONE);
         new GetImage().execute(getArguments().getString("eventId"));
 
         return rootView;
