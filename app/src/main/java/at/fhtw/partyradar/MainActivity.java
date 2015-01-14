@@ -62,6 +62,10 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         mDataPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 600000, mDataPendingIntent);     // 10 minutes * 60 seconds * 1000 = 600000 milliseconds
+
+        // run the update immediately (since setInexactRepeating is inexact, and it can take a lot of time until runs for the first time)
+        Intent sendIntent = new Intent(this, FetchDataService.class);
+        startService(sendIntent);
     }
 
     @Override

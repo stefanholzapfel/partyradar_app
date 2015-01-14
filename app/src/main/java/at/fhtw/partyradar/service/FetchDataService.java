@@ -104,7 +104,9 @@ public class FetchDataService extends IntentService {
             keywordsJsonStr = buffer.toString();
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
+            Log.e(LOG_TAG, e.getMessage(), e);
+            return;
+
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -225,7 +227,7 @@ public class FetchDataService extends IntentService {
             eventsJsonStr = buffer.toString();
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
+            Log.e(LOG_TAG, e.getMessage(), e);
             return;
 
         } finally {
