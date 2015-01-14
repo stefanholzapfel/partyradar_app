@@ -91,7 +91,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
                 String[] latLngSplit = latLngString.split("\\|");
 
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
-                getLoaderManager().restartLoader(EVENT_LOADER, null, mThisContext);
+                getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, mThisContext);
             }
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);

@@ -5,6 +5,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -183,17 +184,22 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
     }
 
     private void runAutoLogin() {
+        final ProgressDialog progress = new ProgressDialog(this);
+        progress.setTitle(getString(R.string.login_progress_title));
+        progress.setMessage(getString(R.string.login_progress_message));
+        progress.show();
+
         new AsyncTask<Context, Void, Void>() {
             @Override
             protected Void doInBackground(Context... params) {
                 if (params == null) return null;
-
                 Context context = params[0];
 
                 // get new token (by invalidating the old one)
                 final String authToken = AuthenticationHelper.getToken(context, true);
-                if (authToken == null) return null;
+                progress.dismiss();
 
+                if (authToken == null) return null;
                 mAuthToken = authToken;
 
                 // needs to be run as runOnUiThread (since a lot of UI elements need to be updated)
