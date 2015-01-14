@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.security.Key;
-
 import at.fhtw.partyradar.data.EventContract.EventEntry;
 import at.fhtw.partyradar.data.EventContract.KeywordEntry;
 
@@ -43,13 +41,13 @@ public class EventDbHelper extends SQLiteOpenHelper {
                 EventEntry.COLUMN_ADDRESS_ADDITIONS + " TEXT NULL, " +
                 EventEntry.COLUMN_COUNTRY + " TEXT NULL" +
                 " );";
+
         final String SQL_CREATE_KEYWORD_TABLE = "CREATE TABLE " + KeywordEntry.TABLE_NAME + " (" +
                 KeywordEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 KeywordEntry.COLUMN_KEYWORD_ID + " TEXT UNIQUE NOT NULL, " +
                 KeywordEntry.COLUMN_LABEL + " TEXT UNIQUE NOT NULL, " +
                 "UNIQUE (" + KeywordEntry.COLUMN_KEYWORD_ID + ") ON CONFLICT IGNORE, " +
                 "UNIQUE (" + KeywordEntry.COLUMN_LABEL + ") ON CONFLICT IGNORE );";
-
 
         sqLiteDatabase.execSQL(SQL_CREATE_EVENT_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_KEYWORD_TABLE);

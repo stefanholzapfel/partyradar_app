@@ -17,7 +17,7 @@
     <string name="attend_success">Logged in successfully</string>
     <string name="attend_failed">Login to event failed</string>
     <string name="login_progress_title">Logging in</string>
-    <string name="login_progress_message">Wait while logging in ...</string>
+    <string name="login_progress_message">Please wait while logging in &#8230;</string>
 
     <string name="login_username">Enter username</string>
     <string name="login_password">Enter password</string>
