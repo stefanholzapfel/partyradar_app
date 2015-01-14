@@ -329,7 +329,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
                 break;
             case "Attendees":
                 sortBy = EVENT_COLUMNS[COL_ATTENDEECOUNT];
-                sortBy += " ASC";
+                sortBy += " DESC";
                 break;
         }
         cursorParams.putString("sortBy", sortBy);

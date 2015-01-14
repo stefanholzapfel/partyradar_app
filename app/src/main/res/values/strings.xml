@@ -6,6 +6,8 @@
     <string name="action_showHeatMap">Show heat map</string>
     <string name="action_login">Login</string>
     <string name="action_logout">Logout</string>
+    <string name="action_showEventMap">Show map</string>
+    <string name="action_showEventList">Show list</string>
 
     <string name="text_none">None</string>
 
@@ -17,7 +19,7 @@
     <string name="attend_success">Logged in successfully</string>
     <string name="attend_failed">Login to event failed</string>
     <string name="login_progress_title">Logging in</string>
-    <string name="login_progress_message">Wait while logging in ...</string>
+    <string name="login_progress_message">Please wait while logging in &#8230;</string>
 
     <string name="login_username">Enter username</string>
     <string name="login_password">Enter password</string>
@@ -54,6 +56,7 @@
     <string name="eventlist_title">PARTY OVERVIEW</string>
     <string name="title_filter">Partyfilter tags:</string>
     <string name="eventlist_sorter_title">Sorty by:</string>
+
     <string-array name="eventlist_sortby">
         <item>Distance</item>
         <item>Name</item>

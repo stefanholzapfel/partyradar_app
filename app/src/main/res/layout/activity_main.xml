@@ -27,13 +27,13 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MapFragment"
+                android:text="@string/action_showEventMap"
                 android:onClick="showMapFragment" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ListFragment"
+                android:text="@string/action_showEventList"
                 android:onClick="showListFragment" />
 
         </LinearLayout>
