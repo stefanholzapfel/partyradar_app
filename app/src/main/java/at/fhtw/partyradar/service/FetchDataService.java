@@ -10,6 +10,18 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +60,106 @@ public class FetchDataService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.i(LOG_TAG, "Starting update");
+        this.fetchEvents();
+        this.fetchKeywords();
+        Log.i(LOG_TAG, "Finished update");
+    }
 
+    protected void fetchKeywords() {
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+
+        String keywordsJsonStr = null;
+
+        try {
+            final String KEYWORDS_BASE_URL = "http://wi-gate.technikum-wien.at:60349/api/Keyword";
+
+            Uri builtUri = Uri.parse(KEYWORDS_BASE_URL);
+            URL url = new URL(builtUri.toString());
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Authorization", "Bearer qR9EDePX-vHpCOWJ_poSkKmwkamcSXunQB287Erdq-9R7lbMFvD99k9S4YUNCLd8KqdnSRsvP_KLqHdgJ20fJQjLkd2YP4u9jWOxe1dGkXmWDsTBKnET3pP5nNDFWJUcCdvD6eGflzMOJ-TDS9_DLICvDKLq-8mnB53rp5CJ02cYOEbJKteiTq27qj-yzMhQ-H8A30EL6OzE_UPWGsL3RQZVJI82YucJwt2vNoM-98r8_2XgJPHfHiJoec6Xh1scb56jrj8zkbUWTJ0lsJR7H4jZqkjA35g87wMNy2d4TuGoEj1Z-GdaxTqIONoFsusbcElHYNOow4IaqCHnXFgYFHHJBxvFLN3OcIA4bV5NYgR7vJV7pB4EDYV6vnSYQ735iJC7qbEIFriRg8mbjwCDbG8GFXVaN__wVyNfwGXaIC8262SR23HLc-0M6cK2xj1c2nEqbwsx0flrUaxtehro3_MbkA13_o-Twd2y0HY8Sj0qmvMr6dL76oA2gGNOFZ9K5Op2NpIsFSs8sBK07LhH_g");
+            urlConnection.connect();
+
+            InputStream inputStream = urlConnection.getInputStream();
+            StringBuffer buffer = new StringBuffer();
+
+            if (inputStream == null) {
+                return;
+            }
+
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                // But it does make debugging a *lot* easier if you print out the completed
+                // buffer for debugging.
+                buffer.append(line + "\n");
+            }
+            if (buffer.length() == 0) {
+                return;
+            }
+
+            keywordsJsonStr = buffer.toString();
+
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error ", e);
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e(LOG_TAG, "Error closing stream", e);
+                }
+            }
+        }
+
+        final String KEYWORDS_ID = "Id";
+        final String KEYWORDS_LABEL = "Label";
+        try {
+            JSONArray keywordsArray = new JSONArray(keywordsJsonStr);
+
+            Vector<ContentValues> cVVector = new Vector<>(keywordsArray.length());
+
+            for(int i = 0; i < keywordsArray.length(); i++) {
+
+                String keywordId;
+                String label;
+
+                JSONObject keyword = keywordsArray.getJSONObject(i);
+
+                keywordId = keyword.getString(KEYWORDS_ID);
+                label = keyword.getString(KEYWORDS_LABEL);
+
+                ContentValues keywordValues = new ContentValues();
+
+                keywordValues.put(EventContract.KeywordEntry.COLUMN_KEYWORD_ID, keywordId);
+                keywordValues.put(EventContract.KeywordEntry.COLUMN_LABEL, label);
+
+                cVVector.add(keywordValues);
+            }
+
+            if (cVVector.size() > 0) {
+                ContentValues[] cvArray = new ContentValues[cVVector.size()];
+                cVVector.toArray(cvArray);
+
+                // import
+                getApplication().getContentResolver().bulkInsert(EventContract.KeywordEntry.CONTENT_URI, cvArray);
+
+            }
+
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+
+    }
+
+    protected void fetchEvents() {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -252,7 +363,5 @@ public class FetchDataService extends IntentService {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-
-        Log.i(LOG_TAG, "Finished update");
     }
 }

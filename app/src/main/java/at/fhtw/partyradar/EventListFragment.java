@@ -14,18 +14,25 @@ import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
 
+import java.util.ArrayList;
+
+import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.data.EventContract.EventEntry;
 import at.fhtw.partyradar.helper.Utility;
 import at.fhtw.partyradar.service.BackgroundLocationService;
@@ -70,8 +77,20 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     public static final int COL_ATTENDEECOUNT = 8;
     public static final int COL_DISTANCE = 9;
 
+    private static final String[] KEYWORD_COLUMNS = {
+            EventContract.KeywordEntry._ID,
+            EventContract.KeywordEntry.COLUMN_KEYWORD_ID,
+            EventContract.KeywordEntry.COLUMN_LABEL,
+    };
+
+    public static final int KEYWORD_COL_ID = 0;
+    public static final int KEYWORD_COL_KEYWORDID = 1;
+    public static final int KEYWORD_COL_LABEL = 2;
+
     private Bundle cursorParams;
     private Spinner sortBySpinner;
+
+    private ArrayList<String> mKeywordList;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -95,6 +114,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             }
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
+        mKeywordList = new ArrayList<>();
 
         mLastPosition = Utility.getPositionFromStorage(getActivity());
     }
@@ -130,7 +150,28 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
 
         cursorParams = new Bundle();
 
-        EditText mTagFilterText = (EditText) rootView.findViewById(R.id.event_tag_filter);
+        populateKeywordList();
+
+        MultiAutoCompleteTextView mTagFilterAutoComplete = (MultiAutoCompleteTextView)
+                rootView.findViewById(R.id.event_tag_autocomplete);
+
+        mTagFilterAutoComplete.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        ArrayAdapter<String> mKeywordAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_expandable_list_item_1, mKeywordList);
+
+        mTagFilterAutoComplete.setThreshold(1);
+        mTagFilterAutoComplete.setAdapter(mKeywordAdapter);
+
+        mTagFilterAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedKeyword = adapterView.getItemAtPosition(i).toString();
+                filterEventData(selectedKeyword);
+            }
+        });
+
+
+        /*EditText mTagFilterText = (EditText) rootView.findViewById(R.id.event_tag_filter);
 
         mTagFilterText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -143,7 +184,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             @Override
             public void afterTextChanged(Editable editable) {
             }
-        });
+        });*/
 
         sortBySpinner = (Spinner) rootView.findViewById(R.id.event_sortby);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getActivity(),
@@ -158,6 +199,35 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
 
     }
 
+    private void populateKeywordList() {
+        mKeywordList.clear();
+        Cursor keywords = getActivity().getContentResolver().query(
+                EventContract.KeywordEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        while (keywords.moveToNext()) {
+            String label = keywords.getString(keywords.getColumnIndex(
+                    KEYWORD_COLUMNS[KEYWORD_COL_LABEL]
+            ));
+            mKeywordList.add(keywords.getPosition(), label);
+        }
+    }
+
+    private void filterEventData(String keyword) {
+        if(cursorParams.getStringArrayList("keywords") == null) {
+            ArrayList<String> keywords = new ArrayList<>();
+            keywords.add(keyword);
+            cursorParams.putStringArrayList("keywords", keywords);
+        } else {
+            cursorParams.getStringArrayList("keywords").add(keyword);
+        }
+        getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, this);
+    }
+
+    @Deprecated
     private void filterEventData(CharSequence s) {
         if(!s.toString().equals("#") || s.length() > 1) {
             String[] keywords = s.toString().replaceFirst("^#", "").split("#");
@@ -208,11 +278,11 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         String sortBy = null;
 
         if(args != null && !args.isEmpty()) {
-            if(args.getStringArray("keywords") != null && args.getStringArray("keywords").length > 0) {
-                String[] keywords = args.getStringArray("keywords");
-                selection = EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%#" + keywords[0] + "%'";
-                for (int i = 1; i < keywords.length ; i++)
-                    selection += " AND " + EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%" + keywords[i] + "%'";
+            if(args.getStringArrayList("keywords") != null && !args.getStringArrayList("keywords").isEmpty()) {
+                ArrayList<String> keywords = args.getStringArrayList("keywords");
+                selection = EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%#" + keywords.get(0) + "%'";
+                for (int i = 1; i < keywords.size() ; i++)
+                    selection += " AND " + EVENT_COLUMNS[COL_KEYWORDS] + " LIKE '%" + keywords.get(i) + "%'";
             }
             if(args.getString("sortBy").length() > 0) {
                 sortBy = args.getString("sortBy");
@@ -250,7 +320,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         String sortBy = "";
         switch (selectedSort) {
             case "Distance":
-                sortBy = "distance";
+                sortBy = EventEntry.COLUMN_DISTANCE;
                 sortBy += " DESC";
                 break;
             case "Name":

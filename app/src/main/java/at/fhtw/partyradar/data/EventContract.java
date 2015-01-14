@@ -9,6 +9,7 @@ public class EventContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_EVENT = "event";
     public static final String PATH_EVENTAREA = "event_area";
+    public static final String PATH_KEYWORD = "keyword";
 
     public static final class EventEntry implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENT).build();
@@ -74,6 +75,33 @@ public class EventContract {
 
         public static String getLatFromUri(Uri uri) {
             return uri.getQueryParameter(COLUMN_LATITUDE);
+        }
+    }
+
+    public static final class KeywordEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_KEYWORD).build();
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" + CONTENT_AUTHORITY + "/" + PATH_KEYWORD;
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + CONTENT_AUTHORITY + "/" + PATH_KEYWORD;
+
+        // Columns for overview
+        public static final String TABLE_NAME = "keyword";
+        public static final String COLUMN_KEYWORD_ID = "keywordID";
+        public static final String COLUMN_LABEL = "label";
+
+        public static Uri buildKeywordUri(String id) {
+            return Uri.parse(BASE_CONTENT_URI + "/" + PATH_KEYWORD + "/" + id);
+        }
+
+        /**
+         * builds URI for all keywords
+         */
+        public static Uri buildKeyword() {
+            return BASE_CONTENT_URI;
+        }
+
+        public static String getIdFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
         }
     }
 

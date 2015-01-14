@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import java.security.Key;
+
 import at.fhtw.partyradar.helper.Utility;
 
 public class EventProvider extends ContentProvider {
@@ -18,6 +20,9 @@ public class EventProvider extends ContentProvider {
     private static final int EVENT = 100;
     private static final int EVENT_ID = 101;
     private static final int EVENT_AREA = 102;
+
+    private static final int KEYWORD = 200;
+    private static final int KEYWORD_ID = 201;
 
     @Override
     public boolean onCreate() {
@@ -33,6 +38,8 @@ public class EventProvider extends ContentProvider {
         matcher.addURI(authority, EventContract.PATH_EVENT, EVENT);
         matcher.addURI(authority, EventContract.PATH_EVENT + "/*", EVENT_ID);
         matcher.addURI(authority, EventContract.PATH_EVENTAREA, EVENT_AREA);
+
+        matcher.addURI(authority, EventContract.PATH_KEYWORD, KEYWORD);
 
         return matcher;
     }
@@ -59,6 +66,32 @@ public class EventProvider extends ContentProvider {
         // and query the database accordingly.
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
+            // "keyword"
+            case KEYWORD: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        EventContract.KeywordEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case KEYWORD_ID: {
+                String queryId = EventContract.KeywordEntry.getIdFromUri(uri);
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        EventContract.KeywordEntry.TABLE_NAME,
+                        projection,
+                        EventContract.KeywordEntry.COLUMN_KEYWORD_ID + " = '" + queryId + "'",
+                        null,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             // "event"
             case EVENT: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
@@ -151,6 +184,11 @@ public class EventProvider extends ContentProvider {
                 rowsUpdated = db.update(EventContract.EventEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
+            case KEYWORD: {
+                rowsUpdated = db.update(EventContract.KeywordEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -168,6 +206,9 @@ public class EventProvider extends ContentProvider {
         switch (match) {
             case EVENT:
                 rowsDeleted = db.delete(EventContract.EventEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case KEYWORD:
+                rowsDeleted = db.delete(EventContract.KeywordEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -193,6 +234,14 @@ public class EventProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case KEYWORD: {
+                long _id = db.insert(EventContract.KeywordEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = EventContract.KeywordEntry.buildKeywordUri(values.getAsString(EventContract.KeywordEntry.COLUMN_KEYWORD_ID));
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -204,10 +253,10 @@ public class EventProvider extends ContentProvider {
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
+        int returnCount = 0;
         switch (match) {
             case EVENT:
                 db.beginTransaction();
-                int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
 
@@ -221,6 +270,21 @@ public class EventProvider extends ContentProvider {
                     db.endTransaction();
                 }
 
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case KEYWORD:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(EventContract.KeywordEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
             default:
