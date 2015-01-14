@@ -132,11 +132,11 @@ public class EventProvider extends ContentProvider {
                 extendedSelection += "distance > " + Double.toString(Math.cos(radius / 6371.0));
 
                 // extending the selection of the query by filtering for the time
-                if (!fromTime.isEmpty()) {
+                if (fromTime != null && !fromTime.isEmpty()) {
                     extendedSelection += " AND " + EventContract.EventEntry.COLUMN_START + " > '" + fromTime + "'";
                 }
 
-                if (!toTime.isEmpty()) {
+                if (toTime != null && !toTime.isEmpty()) {
                     extendedSelection += " AND " + EventContract.EventEntry.COLUMN_START + " < '" + toTime + "'";
                 }
 
