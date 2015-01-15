@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import java.security.Key;
-
 import at.fhtw.partyradar.helper.Utility;
 
 public class EventProvider extends ContentProvider {

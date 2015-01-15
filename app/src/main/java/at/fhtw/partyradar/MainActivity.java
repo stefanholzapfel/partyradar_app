@@ -63,7 +63,7 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 600000, mDataPendingIntent);     // 10 minutes * 60 seconds * 1000 = 600000 milliseconds
 
-        // run the update immediately (since setInexactRepeating is inexact, and it can take a lot of time until runs for the first time)
+        // run the update immediately (since setInexactRepeating is inexact, and it can take up to a full interval until it runs for the first time)
         Intent sendIntent = new Intent(this, FetchDataService.class);
         startService(sendIntent);
     }
@@ -187,6 +187,9 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
         }
     }
 
+    /**
+     * runs the process of automatically logging in the user
+     */
     private void runAutoLogin() {
         final ProgressDialog progress = new ProgressDialog(this);
         progress.setTitle(getString(R.string.login_progress_title));

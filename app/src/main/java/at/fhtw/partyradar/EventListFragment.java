@@ -12,20 +12,14 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -109,6 +103,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
                 String latLngString = intent.getStringExtra(BackgroundLocationService.BROADCAST_DATA);
                 String[] latLngSplit = latLngString.split("\\|");
 
+                // reloading the event list after a location update
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
                 getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, mThisContext);
             }

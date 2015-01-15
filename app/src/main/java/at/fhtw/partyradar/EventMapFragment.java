@@ -118,6 +118,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         View rootView = inflater.inflate(R.layout.fragment_eventmap, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment)(getChildFragmentManager().findFragmentById(R.id.mapFragment));
 
+        // preparing switch for map <-> heat map
         mSwitch_showHeatMap = (Switch) rootView.findViewById(R.id.switch_showHeatMap);
         mSwitch_showHeatMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
@@ -127,14 +128,14 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             }
         });
 
+        // initializing the map (onMapReady will be called when done)
         mapFragment.getMapAsync(this);
 
         // show the option to switch to the heat map only if logged in
         new AsyncTask<Context, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Context... params) {
-                if (AuthenticationHelper.getToken(getActivity(), false) != null) return true;
-                else return false;
+                return (AuthenticationHelper.getToken(getActivity(), false) != null);
             }
 
             @Override
@@ -152,6 +153,9 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
     }
 
+    /**
+     * called after the map is initialized and ready
+     */
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mMap.setMyLocationEnabled(true);
@@ -205,8 +209,6 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             int event_maxAttends = mEventData.getInt(COL_MAX_ATTENDS);
             int event_attendeeCount = mEventData.getInt(COL_ATTENDEECOUNT);
 
-            // TODO: add intents to open event details
-
             // building data for the heat map
             if (mSwitch_showHeatMap.isChecked()) {
                 // TODO: calculate correct ratio
@@ -221,6 +223,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
                         .snippet(event_locationName)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
+                // a list of markers plus their event ids needs to be build, so we can open the event detail
                 mMarkerMap.put(marker.getId(), mEventData.getString(COL_EVENT_ID));
             }
         } while (mEventData.moveToNext());

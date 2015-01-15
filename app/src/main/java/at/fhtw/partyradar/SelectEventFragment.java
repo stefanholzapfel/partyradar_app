@@ -31,6 +31,8 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
     private SelectEventAdapter mSelectEventAdapter;
     private Cursor mCursor;
 
+    private NoticeDialogListener mListener;
+
     // Definition of the database's columns used by the loader
     private static final String[] EVENT_COLUMNS = {
             EventContract.EventEntry._ID,
@@ -48,8 +50,6 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
     public interface NoticeDialogListener {
         public void onAttendEventClick(DialogFragment dialog);
     }
-
-    NoticeDialogListener mListener;
 
     @Override
     public void onAttach(Activity activity) {
@@ -92,6 +92,10 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
         return builder.create();
     }
 
+    /**
+     * logging into an event
+     * @param position position of the event in the event list / cursor
+     */
     private void attendEvent(int position) {
         mCursor.moveToPosition(position);
 

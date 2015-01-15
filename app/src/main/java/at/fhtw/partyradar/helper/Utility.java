@@ -26,8 +26,6 @@ public class Utility {
         String lat = preferences.getString(context.getString(R.string.pref_last_location_lat), context.getString(R.string.default_location_lat));
         String lng = preferences.getString(context.getString(R.string.pref_last_location_lng), context.getString(R.string.default_location_lng));
 
-        //Log.i("Utility", "Location retrieved from Preferences");
-
         return new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
     }
 
@@ -44,8 +42,6 @@ public class Utility {
             editor.putString(context.getString(R.string.pref_last_location_lat), Double.toString(location.getLatitude()));
             editor.putString(context.getString(R.string.pref_last_location_lng), Double.toString(location.getLongitude()));
             editor.apply();
-
-            //Log.i("Utility", "Location stored in Preferences");
         }
     }
 
@@ -125,7 +121,7 @@ public class Utility {
 
     /**
      * returns a user friendly date
-     * @param date Date string in format as stored in dataprovider
+     * @param date Date string in format as stored in data provider
      * @return string friendly date
      */
     public static String getFriendlyDate(String date) {

@@ -10,18 +10,6 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +53,10 @@ public class FetchDataService extends IntentService {
         Log.i(LOG_TAG, "Finished update");
     }
 
-    protected void fetchKeywords() {
+    /**
+     * downloads and stores the keyword data
+     */
+    private void fetchKeywords() {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -79,6 +70,7 @@ public class FetchDataService extends IntentService {
 
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
+            // TODO: needs to be fixed in service and removed here
             urlConnection.setRequestProperty("Authorization", "Bearer qR9EDePX-vHpCOWJ_poSkKmwkamcSXunQB287Erdq-9R7lbMFvD99k9S4YUNCLd8KqdnSRsvP_KLqHdgJ20fJQjLkd2YP4u9jWOxe1dGkXmWDsTBKnET3pP5nNDFWJUcCdvD6eGflzMOJ-TDS9_DLICvDKLq-8mnB53rp5CJ02cYOEbJKteiTq27qj-yzMhQ-H8A30EL6OzE_UPWGsL3RQZVJI82YucJwt2vNoM-98r8_2XgJPHfHiJoec6Xh1scb56jrj8zkbUWTJ0lsJR7H4jZqkjA35g87wMNy2d4TuGoEj1Z-GdaxTqIONoFsusbcElHYNOow4IaqCHnXFgYFHHJBxvFLN3OcIA4bV5NYgR7vJV7pB4EDYV6vnSYQ735iJC7qbEIFriRg8mbjwCDbG8GFXVaN__wVyNfwGXaIC8262SR23HLc-0M6cK2xj1c2nEqbwsx0flrUaxtehro3_MbkA13_o-Twd2y0HY8Sj0qmvMr6dL76oA2gGNOFZ9K5Op2NpIsFSs8sBK07LhH_g");
             urlConnection.connect();
 
@@ -161,7 +153,10 @@ public class FetchDataService extends IntentService {
 
     }
 
-    protected void fetchEvents() {
+    /**
+     * downloads and stores the event data
+     */
+    private void fetchEvents() {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
