@@ -44,6 +44,7 @@
     <string name="token_full_access_label">Full access to all events and locations</string>
     <string name="title_activity_login">Log in</string>
     <string name="text_wrong_user_password">Wrong username or password</string>
+    <string name="text_provide_user_password">Please provide both username and password</string>
 
     <!-- for detail fragment -->
     <string name="activity_detail_title">Party Details</string>

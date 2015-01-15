@@ -39,7 +39,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         findViewById(R.id.login_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submit();
+                submitLoginData();
             }
         });
     }
@@ -69,10 +69,18 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void submit() {
+    /**
+     * processing the login data and logging in (creating new account)
+     */
+    public void submitLoginData() {
         final String userName = ((TextView) findViewById(R.id.login_username)).getText().toString();
         final String userPass = ((TextView) findViewById(R.id.login_password)).getText().toString();
         final String accountType = getString(R.string.auth_account_type);
+
+        if (userName.isEmpty() || userPass.isEmpty()) {
+            Toast.makeText(getBaseContext(), getString(R.string.text_provide_user_password), Toast.LENGTH_LONG).show();
+            return;
+        }
 
         new AsyncTask<String, Void, Intent>() {
             @Override
@@ -99,9 +107,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                     Log.e(LOG_TAG, e.getMessage(), e);
                 }
 
-                Intent res = new Intent();
-                res.putExtras(data);
-                return res;
+                Intent resultIntent = new Intent();
+                resultIntent.putExtras(data);
+                return resultIntent;
             }
 
             @Override
@@ -125,6 +133,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
         Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
 
+        // adding new account
         if (getIntent().getBooleanExtra(AccountAuthenticator.IS_ADDING_NEW_ACCOUNT, false)) {
             Log.d(LOG_TAG, "finishLogin: addAccountExplicitly");
 
@@ -144,6 +153,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
 
+        // finish this activity
         finish();
     }
 }
