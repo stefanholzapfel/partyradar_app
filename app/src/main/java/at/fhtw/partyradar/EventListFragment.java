@@ -12,6 +12,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.data.EventContract.EventEntry;
@@ -39,6 +43,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
     private static final String SELECTED_KEY = "selected_key";
+    private static final String SELECTED_TAGS = "selected_tags";
     private LatLng mLastPosition;
     private BroadcastReceiver mReceiver;
 
@@ -81,10 +86,17 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     public static final int KEYWORD_COL_KEYWORDID = 1;
     public static final int KEYWORD_COL_LABEL = 2;
 
-    private Bundle cursorParams;
+    private Bundle mCursorParams;
+
+    private ArrayList<String> getKeywordFilter() {
+        if(mCursorParams.getStringArrayList("keywords") == null)
+            mCursorParams.putStringArrayList("keywords", new ArrayList<String>());
+        return mCursorParams.getStringArrayList("keywords");
+    }
+
     private Spinner sortBySpinner;
 
-    private ArrayList<String> mKeywordList;
+    private int mTagFilterCount = 0;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -95,6 +107,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
         mThisContext = this;
 
+        mCursorParams = new Bundle();
         // prepare and register for broadcasts of location updates
         IntentFilter intentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
         mReceiver = new BroadcastReceiver() {
@@ -105,11 +118,10 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
 
                 // reloading the event list after a location update
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
-                getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, mThisContext);
+                getLoaderManager().restartLoader(EVENT_LOADER, mCursorParams, mThisContext);
             }
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
-        mKeywordList = new ArrayList<>();
 
         mLastPosition = Utility.getPositionFromStorage(getActivity());
     }
@@ -137,22 +149,24 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         });
 
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
-            // The listView probably hasn't even been populated yet. Actually perform the
-            // swapout in onLoadFinished.
-            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+        if (savedInstanceState != null) {
+            if(savedInstanceState.containsKey(SELECTED_KEY))
+                mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            if(savedInstanceState.containsKey(SELECTED_TAGS)) {
+                mCursorParams = savedInstanceState.getBundle(SELECTED_TAGS);
+
+            }
         }
 
-        cursorParams = new Bundle();
-
-        populateKeywordList();
+        getKeywordList();
 
         MultiAutoCompleteTextView mTagFilterAutoComplete = (MultiAutoCompleteTextView)
                 rootView.findViewById(R.id.event_tag_autocomplete);
 
         mTagFilterAutoComplete.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        ArrayList<String> keywordData = getKeywordList();
         ArrayAdapter<String> mKeywordAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_expandable_list_item_1, mKeywordList);
+                android.R.layout.simple_expandable_list_item_1, keywordData);
 
         mTagFilterAutoComplete.setThreshold(1);
         mTagFilterAutoComplete.setAdapter(mKeywordAdapter);
@@ -161,25 +175,29 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedKeyword = adapterView.getItemAtPosition(i).toString();
-                filterEventData(selectedKeyword);
+                updateKeywordFilter(selectedKeyword);
             }
         });
 
-
-        /*EditText mTagFilterText = (EditText) rootView.findViewById(R.id.event_tag_filter);
-
-        mTagFilterText.addTextChangedListener(new TextWatcher() {
+        mTagFilterAutoComplete.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                mTagFilterCount = charSequence.length();
             }
+
             @Override
             public void onTextChanged(CharSequence s, int i, int i2, int i3) {
-                filterEventData(s);
+                if(s.length() < mTagFilterCount) {
+                    List<String> keywords = Arrays.asList(s.toString().split(",[ ]*"));
+                    updateKeywordFilter(keywords);
+                }
             }
+
             @Override
             public void afterTextChanged(Editable editable) {
+
             }
-        });*/
+        });
 
         sortBySpinner = (Spinner) rootView.findViewById(R.id.event_sortby);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getActivity(),
@@ -194,8 +212,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
 
     }
 
-    private void populateKeywordList() {
-        mKeywordList.clear();
+    private ArrayList<String> getKeywordList() {
         Cursor keywords = getActivity().getContentResolver().query(
                 EventContract.KeywordEntry.CONTENT_URI,
                 null,
@@ -203,35 +220,24 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
                 null,
                 null
         );
+        ArrayList<String> keywordList = new ArrayList<>();
         while (keywords.moveToNext()) {
             String label = keywords.getString(keywords.getColumnIndex(
                     KEYWORD_COLUMNS[KEYWORD_COL_LABEL]
             ));
-            mKeywordList.add(keywords.getPosition(), label);
+            keywordList.add(keywords.getPosition(), label);
         }
+        return keywordList;
     }
 
-    private void filterEventData(String keyword) {
-        if(cursorParams.getStringArrayList("keywords") == null) {
-            ArrayList<String> keywords = new ArrayList<>();
-            keywords.add(keyword);
-            cursorParams.putStringArrayList("keywords", keywords);
-        } else {
-            cursorParams.getStringArrayList("keywords").add(keyword);
-        }
-        getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, this);
+    private void updateKeywordFilter(List<String> keywords) {
+        getKeywordFilter().retainAll(keywords);
+        getLoaderManager().restartLoader(EVENT_LOADER, mCursorParams, this);
     }
 
-    @Deprecated
-    private void filterEventData(CharSequence s) {
-        if(!s.toString().equals("#") || s.length() > 1) {
-            String[] keywords = s.toString().replaceFirst("^#", "").split("#");
-            if(keywords.length > 0) {
-                cursorParams.putStringArray("keywords", keywords);
-                getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, this);
-            }
-        } else if(s.length() == 0)
-            getLoaderManager().restartLoader(EVENT_LOADER, null, this);
+    private void updateKeywordFilter(String keyword) {
+        getKeywordFilter().add(keyword);
+        getLoaderManager().restartLoader(EVENT_LOADER, mCursorParams, this);
     }
 
     @Override
@@ -249,7 +255,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(EVENT_LOADER, null, this);
+        getLoaderManager().restartLoader(EVENT_LOADER, mCursorParams, this);
     }
 
     @Override
@@ -258,6 +264,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         if (mPosition != ListView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
         }
+        outState.putBundle(SELECTED_TAGS, mCursorParams);
         super.onSaveInstanceState(outState);
     }
 
@@ -298,7 +305,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mEventListAdapter.swapCursor(data);
-        populateKeywordList();
+        getKeywordList();
 
         if (mPosition != ListView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore
@@ -330,8 +337,8 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
                 sortBy += " DESC";
                 break;
         }
-        cursorParams.putString("sortBy", sortBy);
-        getLoaderManager().restartLoader(EVENT_LOADER, cursorParams, this);
+        mCursorParams.putString("sortBy", sortBy);
+        getLoaderManager().restartLoader(EVENT_LOADER, mCursorParams, this);
     }
 
     @Override
