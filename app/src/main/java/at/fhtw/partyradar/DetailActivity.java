@@ -10,8 +10,6 @@ import at.fhtw.partyradar.service.FetchDataService;
 
 public class DetailActivity extends ActionBarActivity {
 
-    private final String LOG_TAG = DetailActivity.class.getSimpleName();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

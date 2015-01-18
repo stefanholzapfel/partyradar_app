@@ -25,7 +25,6 @@ import android.widget.Spinner;
 
 import com.google.android.gms.maps.model.LatLng;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -165,7 +164,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
 
         mTagFilterAutoComplete.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         ArrayList<String> keywordData = getKeywordList();
-        ArrayAdapter<String> mKeywordAdapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> mKeywordAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_expandable_list_item_1, keywordData);
 
         mTagFilterAutoComplete.setThreshold(1);
@@ -268,9 +267,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         super.onSaveInstanceState(outState);
     }
 
-
     //Loader methods implementation starts here
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Building Uri for content provider
@@ -279,7 +276,6 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         String selection = null;
         String sortBy = null;
 
-        // TODO: SQL should be moved to the ContentProvider (parameters sent via the URI)
         if(args != null && !args.isEmpty()) {
             if(args.getStringArrayList("keywords") != null && !args.getStringArrayList("keywords").isEmpty()) {
                 ArrayList<String> keywords = args.getStringArrayList("keywords");

@@ -30,7 +30,8 @@ import at.fhtw.partyradar.helper.Utility;
 
 public class FetchDataService extends IntentService {
 
-    public final String LOG_TAG = FetchDataService.class.getSimpleName();
+    private final String LOG_TAG = FetchDataService.class.getSimpleName();
+    public static final String DATA_SERVICE_URL = "http://wi-gate.technikum-wien.at:60349";
 
     public FetchDataService() {
         super("FetchDataService");
@@ -63,7 +64,7 @@ public class FetchDataService extends IntentService {
         String keywordsJsonStr = null;
 
         try {
-            final String KEYWORDS_BASE_URL = "http://wi-gate.technikum-wien.at:60349/api/Keyword";
+            final String KEYWORDS_BASE_URL = DATA_SERVICE_URL + "/api/Keyword";
 
             Uri builtUri = Uri.parse(KEYWORDS_BASE_URL);
             URL url = new URL(builtUri.toString());
@@ -178,7 +179,7 @@ public class FetchDataService extends IntentService {
         String endDateStr = new SimpleDateFormat("yyyy-MM-dd").format(endDate);
 
         try {
-            final String EVENTS_BASE_URL = "http://wi-gate.technikum-wien.at:60349/api/App/GetEvents?";
+            final String EVENTS_BASE_URL = DATA_SERVICE_URL + "/api/App/GetEvents?";
             final String QUERY_PARAM_LAT = "latitude";
             final String QUERY_PARAM_LNG = "longitude";
             final String QUERY_PARAM_RADIUS = "radius";
@@ -237,7 +238,6 @@ public class FetchDataService extends IntentService {
         }
 
         //Log.d(LOG_TAG, eventsJsonStr);
-        // TODO: needs to be fixed in the service
         eventsJsonStr  = "{\"ArrayOfEvent\": " + eventsJsonStr + "}";
 
         final String EVENTS_ARRAY = "ArrayOfEvent";

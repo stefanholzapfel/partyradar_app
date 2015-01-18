@@ -124,7 +124,6 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // TODO: restrict to events in very near distance
         Uri weatherForLocationUri = EventContract.EventEntry.buildEventWithinArea(mLastPosition.latitude, mLastPosition.longitude, Double.parseDouble(getActivity().getString(R.string.attend_max_range)));
 
         return new CursorLoader(

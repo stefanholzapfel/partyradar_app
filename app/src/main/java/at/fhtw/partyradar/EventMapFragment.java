@@ -86,7 +86,6 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
     public static final int COL_MAX_ATTENDS = 9;
     public static final int COL_ATTENDEECOUNT = 10;
 
-
     public EventMapFragment() {
         // Required empty public constructor
     }
@@ -95,7 +94,6 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: check if this is actually required in "v1"
         // prepare and register for broadcasts of location updates
         IntentFilter intentFilter = new IntentFilter(BackgroundLocationService.BROADCAST_ACTION);
         mReceiver = new BroadcastReceiver() {
@@ -104,7 +102,10 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
                 String latLngString = intent.getStringExtra(BackgroundLocationService.BROADCAST_DATA);
                 String[] latLngSplit = latLngString.split("\\|");
 
+                // getting latest position from location service
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
+
+                // for v2: updating detailed event data within map
             }
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
@@ -206,13 +207,12 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             double event_longitude = mEventData.getDouble(COL_LONGITUDE);
             String event_title = mEventData.getString(COL_TITLE);
             String event_locationName = mEventData.getString(COL_LOCATION_NAME);
-            int event_maxAttends = mEventData.getInt(COL_MAX_ATTENDS);
+            //int event_maxAttends = mEventData.getInt(COL_MAX_ATTENDS);
             int event_attendeeCount = mEventData.getInt(COL_ATTENDEECOUNT);
 
             // building data for the heat map
             if (mSwitch_showHeatMap.isChecked()) {
-                // TODO: calculate correct ratio
-                double attendeeRatio = event_maxAttends / 100; //event_attendeeCount / event_maxAttends;
+                double attendeeRatio = event_attendeeCount;
                 eventsForHeatMap.add(new WeightedLatLng(new LatLng(event_latitude, event_longitude), attendeeRatio));
             }
             // drawing the markers

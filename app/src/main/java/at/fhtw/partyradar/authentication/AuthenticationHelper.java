@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.fhtw.partyradar.R;
+import at.fhtw.partyradar.service.FetchDataService;
 
 public class AuthenticationHelper {
 
@@ -39,7 +40,7 @@ public class AuthenticationHelper {
      */
     public static String requestTokenFromService(String userName, String password) {
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/Token");
+        HttpPost httpPost = new HttpPost(FetchDataService.DATA_SERVICE_URL + "/Token");
 
         try {
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
@@ -119,7 +120,7 @@ public class AuthenticationHelper {
         if (eventId == null || authToken == null) return false;
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/api/App/LoginEvent?eventId=" + eventId);
+        HttpPost httpPost = new HttpPost(FetchDataService.DATA_SERVICE_URL + "/api/App/LoginEvent?eventId=" + eventId);
 
         try {
             httpPost.setHeader("Authorization", "Bearer " + authToken);
@@ -144,7 +145,7 @@ public class AuthenticationHelper {
         if (eventId == null || authToken == null) return false;
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://wi-gate.technikum-wien.at:60349/api/App/LogoutEvent?eventId=" + eventId);
+        HttpPost httpPost = new HttpPost(FetchDataService.DATA_SERVICE_URL + "/api/App/LogoutEvent?eventId=" + eventId);
 
         try {
             httpPost.setHeader("Authorization", "Bearer " + authToken);
@@ -189,7 +190,7 @@ public class AuthenticationHelper {
         HttpGet request = new HttpGet();
 
         try {
-            request.setURI(new URI("http://wi-gate.technikum-wien.at:60349/api/App/GetUserDetails"));
+            request.setURI(new URI(FetchDataService.DATA_SERVICE_URL + "/api/App/GetUserDetails"));
             request.setHeader("Authorization", "Bearer " + authToken);
             HttpResponse response = httpClient.execute(request);
 

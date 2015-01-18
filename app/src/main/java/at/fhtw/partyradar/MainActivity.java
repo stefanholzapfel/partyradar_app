@@ -53,7 +53,6 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
     protected void onStart() {
         super.onStart();
 
-        // TODO: Remove BackgroundService if not necessary for other issues
         // start background location service
         startService(mLocationServiceIntent);
 

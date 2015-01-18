@@ -29,6 +29,7 @@ import java.net.URI;
 
 import at.fhtw.partyradar.data.EventContract;
 import at.fhtw.partyradar.helper.Utility;
+import at.fhtw.partyradar.service.FetchDataService;
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>  {
 
@@ -159,7 +160,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             String imageString;
 
             try {
-                request.setURI(new URI ("http://wi-gate.technikum-wien.at:60349/api/App/GetEventPicture?eventId=" + params[0]));
+                request.setURI(new URI (FetchDataService.DATA_SERVICE_URL + "/api/App/GetEventPicture?eventId=" + params[0]));
                 HttpResponse response = httpClient.execute(request);
 
                 if (response.getStatusLine().getStatusCode() != 200) return null;
