@@ -165,7 +165,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
 
         // centering the map to the latest known position
         if (mLastPosition != null) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 12));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastPosition, 13));
         }
 
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
