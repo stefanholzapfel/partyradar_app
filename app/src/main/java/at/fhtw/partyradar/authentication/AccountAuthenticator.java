@@ -35,6 +35,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         Log.d(LOG_TAG, "Adding account");
 
+        // preparing the intent to open the login activity
         Intent intent = new Intent(mContext, LoginActivity.class);
 
         intent.putExtra(ACCOUNT_TYPE, accountType);
@@ -42,6 +43,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         intent.putExtra(IS_ADDING_NEW_ACCOUNT, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
+        // returning the bundle for opening the login activity (for creating a new account)
         Bundle result = new Bundle();
         result.putParcelable(AccountManager.KEY_INTENT, intent);
         return result;

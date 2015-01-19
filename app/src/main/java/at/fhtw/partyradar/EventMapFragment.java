@@ -105,7 +105,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
                 // getting latest position from location service
                 mLastPosition = new LatLng(Double.parseDouble(latLngSplit[0]), Double.parseDouble(latLngSplit[1]));
 
-                // for v2: updating detailed event data within map
+                // for v2: updating detailed event data (including the range) within map
             }
         };
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
@@ -233,6 +233,7 @@ public class EventMapFragment extends Fragment implements OnMapReadyCallback, Go
             HeatmapTileProvider heatMapTileProvider = new HeatmapTileProvider.Builder()
                     .weightedData(eventsForHeatMap)
                     .radius(50)
+                    .opacity(0.7)
                     .build();
             mMap.addTileOverlay(new TileOverlayOptions().tileProvider(heatMapTileProvider));
         }

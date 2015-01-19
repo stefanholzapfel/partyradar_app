@@ -47,7 +47,12 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
     public static final int COL_TITLE = 2;
     public static final int COL_LOCATION_NAME = 3;
 
+    // defining the interface for being notified about dialog actions
     public interface NoticeDialogListener {
+        /**
+         * is called after the user clicks on an event for attending
+         * @param dialog reference to the DialogFragment
+         */
         public void onAttendEventClick(DialogFragment dialog);
     }
 
@@ -73,6 +78,7 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
         mLastPosition = Utility.getPositionFromStorage(getActivity());
         mSelectEventAdapter = new SelectEventAdapter(getActivity(), null, 0);
 
+        // defining the dialog content
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.title_select_event)
                 .setAdapter(mSelectEventAdapter, new DialogInterface.OnClickListener() {
@@ -114,6 +120,7 @@ public class SelectEventFragment extends DialogFragment implements LoaderManager
             protected void onPostExecute(Boolean success) {
                 if (success) {
                     Toast.makeText(mContext, mContext.getString(R.string.attend_success), Toast.LENGTH_SHORT).show();
+                    // notifying all listeners about a successful click
                     mListener.onAttendEventClick(SelectEventFragment.this);
                 }
                 else

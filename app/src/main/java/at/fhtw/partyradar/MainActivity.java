@@ -137,15 +137,22 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
 
     @Override
     public void onAttendEventClick(DialogFragment dialog) {
+        // user clicked successfully on attending an event, so show it now
         showLoggedInEvent(this);
     }
 
+    /**
+     * opens the events list
+     */
     public void showListFragment(View view) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.events_container, new EventListFragment())
                 .commit();
     }
 
+    /**
+     * opens the events map
+     */
     public void showMapFragment(View view) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.events_container, new EventMapFragment())
