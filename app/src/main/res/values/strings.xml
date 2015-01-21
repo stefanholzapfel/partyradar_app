@@ -55,8 +55,11 @@
 
     <!-- for event list fragment -->
     <string name="eventlist_title">PARTY OVERVIEW</string>
-    <string name="title_filter">Partyfilter tags:</string>
+    <string name="title_filter">Filter by tags</string>
     <string name="eventlist_sorter_title">Sort by:</string>
+    
+    <!-- for login -->
+    <string name="title_login">Please login with your credentials!</string>
 
     <string-array name="eventlist_sortby">
         <item>Distance</item>

@@ -145,6 +145,7 @@ public class MainActivity extends ActionBarActivity implements SelectEventFragme
      * opens the events list
      */
     public void showListFragment(View view) {
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.events_container, new EventListFragment())
                 .commit();

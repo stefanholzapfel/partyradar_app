@@ -147,13 +147,11 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
             }
         });
 
-
         if (savedInstanceState != null) {
             if(savedInstanceState.containsKey(SELECTED_KEY))
                 mPosition = savedInstanceState.getInt(SELECTED_KEY);
             if(savedInstanceState.containsKey(SELECTED_TAGS)) {
                 mCursorParams = savedInstanceState.getBundle(SELECTED_TAGS);
-
             }
         }
 
@@ -191,10 +189,8 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
                     updateKeywordFilter(keywords);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
 

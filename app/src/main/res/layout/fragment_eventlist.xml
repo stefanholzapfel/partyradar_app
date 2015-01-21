@@ -55,7 +55,8 @@
         android:layout_weight="5"
         android:id="@+id/event_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@null" />
+        android:layout_height="0dp"
+        android:divider="@color/partyradar_blue"
+        android:dividerHeight="2dp"/>
 
 </LinearLayout>

@@ -10,41 +10,43 @@
     <FrameLayout
         android:id="@+id/events_container"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"/>
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="top"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="4"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="0"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_weight="1">
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/action_showEventMap"
-                    android:onClick="showMapFragment" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_weight="1">
+                    android:onClick="showMapFragment"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"/>
+
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/action_showEventList"
-                    android:onClick="showListFragment" />
+                    android:onClick="showListFragment"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -93,7 +95,8 @@
                 android:layout_height="match_parent"
                 android:id="@+id/main_btn_login"
                 android:text="@string/action_login"
-                android:onClick="showLoginForm" />
+                android:onClick="showLoginForm"
+                android:layout_margin="5dp"/>
 
         </LinearLayout>
 

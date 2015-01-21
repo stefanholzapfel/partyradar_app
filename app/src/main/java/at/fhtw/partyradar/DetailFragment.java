@@ -46,6 +46,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public TextView mEnd;
     public ImageView mPicture;
     public TextView mPictureText;
+    public TextView mKeyWord;
 
     public DetailFragment() {
     }
@@ -83,6 +84,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mPicture = (ImageView) rootView.findViewById(R.id.imageView_partypic);
         mPictureText = (TextView) rootView.findViewById(R.id.textView_partypic);
         mPictureText.setVisibility(View.GONE);
+        mKeyWord = (TextView) rootView.findViewById(R.id.textView_keywords);
         new GetImage().execute(getArguments().getString("eventId"));
 
         return rootView;
@@ -95,7 +97,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         // Specify needed columns.
 
-        String[] colummns = {
+        String[] columns = {
                 EventContract.EventEntry.COLUMN_EVENT_ID,
                 EventContract.EventEntry.COLUMN_TITLE,
                 EventContract.EventEntry.COLUMN_ADDRESS,
@@ -106,7 +108,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 EventContract.EventEntry.COLUMN_DESCRIPTION,
                 EventContract.EventEntry.COLUMN_WEBSITE,
                 EventContract.EventEntry.COLUMN_START,
-                EventContract.EventEntry.COLUMN_END
+                EventContract.EventEntry.COLUMN_END,
+                EventContract.EventEntry.COLUMN_KEYWORDS
         };
 
         String eventStr = getArguments().getString("eventId");
@@ -117,7 +120,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return new CursorLoader(
                 getActivity(),
                 EventUri,
-                colummns,
+                columns,
                 null,
                 null,
                 null
@@ -144,6 +147,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 mWebsite.setVisibility(View.GONE);
             mStart.setText(Utility.getFriendlyDate(data.getString(9)));
             mEnd.setText(Utility.getFriendlyDate(data.getString(10)));
+            mKeyWord.setText(data.getString(11));
         }
     }
 
