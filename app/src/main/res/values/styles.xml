@@ -6,6 +6,7 @@
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:buttonStyle">@style/Button.PartyRadar</item>
         <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">@color/partyradar_grey</item>
     </style>
 
     <!-- ActionBar style -->
@@ -24,7 +25,7 @@
            parent="@style/ActionBar">
         <item name="displayOptions">useLogo|showHome</item>
 
-        <item name="logo">@drawable/ic_launcher</item>
+        <item name="logo">@drawable/ic_logo</item>
     </style>
 
     <style name="Button.PartyRadar" parent="Widget.AppCompat.Light.ActionButton">

@@ -2,7 +2,8 @@
 <resources>
 
     <color name="white">#FFFFFF</color>
-    <color name="partyradar_blue">#337AB7</color>
-    <color name="partyradar_darkblue">#286090</color>
+    <color name="partyradar_grey">#FF383636</color>
+    <color name="partyradar_darkblue">#ff055f73</color>
+    <color name="partyradar_blue">#e7055f73</color>
 
 </resources>
